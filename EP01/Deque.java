@@ -36,6 +36,7 @@ public class Deque<Item> implements Iterable<Item> {
         if (this.last == null)
             this.last = newNode;
         this.first = newNode;
+        this.lenth += 1;
         return;
     }
 
@@ -52,6 +53,7 @@ public class Deque<Item> implements Iterable<Item> {
         else
             this.first = newNode;
         this.last = newNode;
+        this.lenth += 1;
         return;
     }
 
@@ -60,6 +62,7 @@ public class Deque<Item> implements Iterable<Item> {
             throw new java.util.NoSuchElementException("The Deque is empty!\n");
         Item removed = this.first.data;
         this.first = this.first.next;
+        this.lenth -= 1;
         return removed;
     }
 
@@ -68,6 +71,7 @@ public class Deque<Item> implements Iterable<Item> {
             throw new java.util.NoSuchElementException("The Deque is empty!\n");
         Item removed = this.last.data;
         this.last = this.last.prev;
+        this.lenth -= 1;
         return removed;
 
     }
@@ -89,8 +93,9 @@ public class Deque<Item> implements Iterable<Item> {
         public Item next() {
             if (this.current == null)
                 throw new java.util.NoSuchElementException("Deque has no elements left.\n");
+            Node temp = this.current;
             this.current = this.current.next;
-            return this.current.prev.data;
+            return temp.data;
         }
         public void remove() {
             throw new java.lang.UnsupportedOperationException("Invalid operation.\n");
@@ -99,6 +104,12 @@ public class Deque<Item> implements Iterable<Item> {
 
     public static void main(String[] args) {
         Deque<String> testDeque = new Deque<String>();
+
+        StdOut.print("Is the Deque empty ? " + testDeque.isEmpty() + "\n");
+        StdOut.print("What is the size of the Deque ? " + testDeque.size() + "\n");
+
+        //Testing the addition to the end and the begginig of the Deque.
+        StdOut.print("Please type 10 inputs for the Deque.\n");
         for (int i = 0; i < 10; i++) {
             String word = StdIn.readString();
             if (i%2 == 0)
@@ -106,6 +117,31 @@ public class Deque<Item> implements Iterable<Item> {
             else
                 testDeque.addLast(word);
         }
+        StdOut.print("is the Deque empty ? " + testDeque.isEmpty() + "\n");
+        StdOut.print("What is the size of the Deque ? " + testDeque.size() + "\n");
+
+        //Testing the iterator.
+        StdOut.print("Now we will test the iterator.\n");
+        Iterator<String> testIterator = testDeque.iterator();
+        for (int i = 0; i < 10; i++) {
+            if (testIterator.hasNext())
+                StdOut.print(testIterator.next() + " ");
+        }
+        StdOut.print("\n");
+
+        //Testing the removal from the end and the begginig of the Deque.
+        StdOut.print("Now we will test the removal from the Deque.\n");
+        for (int i = 0; i < 10; i++) {
+            if (i%2 == 0)
+                StdOut.print(testDeque.removeFirst() + " ");
+            else
+                StdOut.print(testDeque.removeLast() + " ");
+        }
+        StdOut.print("\n");
+
+        StdOut.print("Testar a exception do remove().\n");
+        testIterator.remove();
+
         return;
     }
 }
