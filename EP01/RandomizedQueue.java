@@ -26,7 +26,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
     // add the item
     public void enqueue(Item item) {
-        if (this.last == this.lenth)
+        if (this.last == this.lenth - 1)
             this.resizeUp();
         this.last += 1;
         this.queue[last] = item;
@@ -61,9 +61,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private class QueueIterator implements Iterator<Item>
     {
-        int current;
+        private int current;
+        private Item[] tempQueue;
         public QueueIterator() {
             this.current = -1;
+            this.tempQueue = (Item[]) new Object[last + 1];
+            for (int i = 0; i < last + 1; i++)
+                tempQueue[i] = queue[i];
+            StdRandom.shuffle(tempQueue);
         }
 
         public boolean hasNext() {
@@ -74,7 +79,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             if (!this.hasNext())
                     throw new java.util.NoSuchElementException("RandomizedQueue has no elements left.\n");
             this.current += 1;
-            return queue[this.current];
+            return tempQueue[this.current];
         }
 
         public void remove() {
@@ -108,12 +113,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         //Testing the removal from the end and the begginig of the Randomized Queue.
         StdOut.print("Now we will test the removal from the Randomized Queue.\n");
-        for (int i = 0; i < 10; i++) {
-            if (i%2 == 0)
-                StdOut.print(testQueue.removeFirst() + " ");
-            else
-                StdOut.print(testQueue.removeLast() + " ");
-        }
+        for (int i = 0; i < 10; i++)
+            StdOut.print(testQueue.dequeue() + " ");
         StdOut.print("\n");
 
         StdOut.print("Testar a exception do remove().\n");
