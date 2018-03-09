@@ -121,11 +121,16 @@ public class Deque<Item> implements Iterable<Item> {
         StdOut.print("What is the size of the Deque ? " + testDeque.size() + "\n");
 
         //Testing the iterator.
-        StdOut.print("Now we will test the iterator.\n");
-        Iterator<String> testIterator = testDeque.iterator();
+        StdOut.print("Now we will test two iterators.\n");
+        Iterator<String> testIterator1 = testDeque.iterator();
+        Iterator<String> testIterator2 = testDeque.iterator();
+
         for (int i = 0; i < 10; i++) {
-            if (testIterator.hasNext())
-                StdOut.print(testIterator.next() + " ");
+            if (testIterator1.hasNext())
+                StdOut.print(testIterator1.next() + " iterator1 ");
+
+            if (testIterator2.hasNext())
+                StdOut.print(testIterator2.next() + " iterator2\n ");
         }
         StdOut.print("\n");
 
@@ -138,9 +143,6 @@ public class Deque<Item> implements Iterable<Item> {
                 StdOut.print(testDeque.removeLast() + " ");
         }
         StdOut.print("\n");
-
-        StdOut.print("Testar a exception do remove().\n");
-        testIterator.remove();
 
         return;
     }
