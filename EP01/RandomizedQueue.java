@@ -7,13 +7,11 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private int last;
     private int lenth;
     private Item[] queue;
-    //private int ocupied;
 
     // construct an empty randomized queue
     public RandomizedQueue() {
         this.last = -1;
         this.lenth = 1;
-        //this.ocupied = 0;
         this.queue = (Item[]) new Object[1];
     }
     // is the randomized queue empty?
@@ -34,7 +32,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         this.last += 1;
         this.queue[last] = item;
-        //this.ocupied += 1;
     }
     // remove and return a random item
     public Item  dequeue() {
