@@ -25,7 +25,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     // add the item
     public void enqueue(Item item) {
         if (item == null)
-            throw new java.lang.IllegalArgumentException("Can't add a null argument to the queue!\n");
+            throw new java.lang.NullPointerException("Can't add a null argument to the queue!\n");
 
         if (this.last == this.lenth - 1)
             this.resizeUp();
@@ -80,7 +80,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
 
         public boolean hasNext() {
-            return this.current <= last;
+            return this.current < last;
         }
 
         public Item next() {
