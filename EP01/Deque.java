@@ -18,7 +18,7 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     public boolean isEmpty() {
-        return this.lenth == 0;
+        return this.lenth <= 0;
     }
 
     public int size() {
@@ -27,7 +27,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     public void addFirst(Item item) {
         if (item == null)
-            throw new java.lang.IllegalArgumentException("Null is not a valid entry for the Deque!\n");
+            throw new java.lang.NullPointerException("Null is not a valid entry for the Deque!\n");
         Node newNode = new Node();
         newNode.data = item;
         newNode.next = this.first;
@@ -42,7 +42,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     public void addLast(Item item) {
         if (item == null)
-            throw new java.lang.IllegalArgumentException("Null is not a valid entry for the Deque!\n");
+            throw new java.lang.NullPointerException("Null is not a valid entry for the Deque!\n");
         Node newNode = new Node();
         newNode.data = item;
         newNode.prev = this.last;
@@ -62,6 +62,8 @@ public class Deque<Item> implements Iterable<Item> {
             throw new java.util.NoSuchElementException("The Deque is empty!\n");
         Item removed = this.first.data;
         this.first = this.first.next;
+        if (this.first != null)
+            this.first.prev = null;
         this.lenth -= 1;
         return removed;
     }
@@ -71,6 +73,8 @@ public class Deque<Item> implements Iterable<Item> {
             throw new java.util.NoSuchElementException("The Deque is empty!\n");
         Item removed = this.last.data;
         this.last = this.last.prev;
+        if (this.last != null)
+            this.last.next = null;
         this.lenth -= 1;
         return removed;
 
@@ -88,10 +92,10 @@ public class Deque<Item> implements Iterable<Item> {
         }
 
         public boolean hasNext() {
-            return current != null;
+            return this.current != null;
         }
         public Item next() {
-            if (this.current == null)
+            if (!hasNext())
                 throw new java.util.NoSuchElementException("Deque has no elements left.\n");
             Node temp = this.current;
             this.current = this.current.next;
@@ -119,13 +123,13 @@ public class Deque<Item> implements Iterable<Item> {
         }
         StdOut.print("is the Deque empty ? " + testDeque.isEmpty() + "\n");
         StdOut.print("What is the size of the Deque ? " + testDeque.size() + "\n");
-
+        /*
         //Testing the iterator.
         StdOut.print("Now we will test two iterators.\n");
         Iterator<String> testIterator1 = testDeque.iterator();
         Iterator<String> testIterator2 = testDeque.iterator();
-
-        for (int i = 0; i < 10; i++) {
+        /*
+        for (int i = 0; i < 20; i++) {
             if (testIterator1.hasNext())
                 StdOut.print(testIterator1.next() + " iterator1 ");
 
@@ -133,13 +137,17 @@ public class Deque<Item> implements Iterable<Item> {
                 StdOut.print(testIterator2.next() + " iterator2\n ");
         }
         StdOut.print("\n");
-
+        */
+        testDeque.removeFirst();
+        testDeque.removeLast();
+        for (String a : testDeque)
+            StdOut.print(a + " ");
         //Testing the removal from the end and the begginig of the Deque.
         StdOut.print("Now we will test the removal from the Deque.\n");
         for (int i = 0; i < 10; i++) {
-            if (i%2 == 0)
+            if (i%2 == 0 && !testDeque.isEmpty())
                 StdOut.print(testDeque.removeFirst() + " ");
-            else
+            else if (i%2 == 1 && !testDeque.isEmpty())
                 StdOut.print(testDeque.removeLast() + " ");
         }
         StdOut.print("\n");
