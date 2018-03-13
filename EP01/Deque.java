@@ -27,11 +27,13 @@ public class Deque<Item> implements Iterable<Item> {
 
     public void addFirst(Item item) {
         if (item == null)
-            throw new java.lang.NullPointerException("Null is not a valid entry for the Deque!\n");
+            throw new java.lang.IllegalArgumentException("Null is not a valid entry for the Deque!\n");
         Node newNode = new Node();
         newNode.data = item;
         newNode.next = this.first;
         newNode.prev = null;
+        if (this.first != null)
+            this.first.prev = newNode;
         //if it's the first incercion then first must also be the last
         if (this.last == null)
             this.last = newNode;
@@ -42,7 +44,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     public void addLast(Item item) {
         if (item == null)
-            throw new java.lang.NullPointerException("Null is not a valid entry for the Deque!\n");
+            throw new java.lang.IllegalArgumentException("Null is not a valid entry for the Deque!\n");
         Node newNode = new Node();
         newNode.data = item;
         newNode.prev = this.last;
