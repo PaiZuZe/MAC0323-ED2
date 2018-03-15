@@ -6,7 +6,6 @@ public class Percolation {
     private byte[][] matrix;
     private int num_opens;
     private int size;
-    private int lastOpened;
     private WeightedQuickUnionUF UF;
 
     // creates n-by-n grid, with all sites initially blocked
@@ -20,7 +19,7 @@ public class Percolation {
         this.llastOpened = -1;
         for (int i = 0; i < this.size; i++)
             for (int j = 0; j < this.size; j++)
-                this.matrix[i][j] = 0;
+                this.matrix[i][j] = 1;
         UF = new WeightedQuickUnionUF(this.num_opens);
         return;
     }
@@ -30,12 +29,19 @@ public class Percolation {
         if (row >= this.size || col >= this.size)
             throw new java.lang.IllegalArgumentException("open: Out of bounds.\n");
 
-        this.matrix[row][col] = 1;
+        this.matrix[row][col] = 0;
         this.num_opens -= 1;
 
-        if (this.lastOpened != -1)
-            UF.union(this.lastOpened, row*this.size + col);
-        this.lastOpened = row*this.size + col;
+
+        if (row -1 >= 0 && this.matrix[row - 1][col] == 0)
+            UF.union((row - 1) * this.size + col , row * this.size + col);
+        if (col + 1 < this.size && this.matrix[row][col + 1] == 0)
+            UF.union(row * this.size + col + 1 , row * this.size + col);
+        if (row + 1 < this.size && this.matrix[row + 1][col] == 0)
+            UF.union((row + 1) * this.size + col , row * this.size + col);
+        if (col - 1 >= 0  && this.matrix[row][col - 1] == 0)
+            UF.union(row * this.size + col - 1 , row * this.size + col);
+
         return;
     }
 
@@ -62,7 +68,13 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return true;
+        for (i = 0; i < this.size; i++)
+            for (j = 0; j < this.size; j++)
+                if (isOpen(0, i))
+                    if (UF.connected(i, (n-1)*n + j)
+                        return true
+                else
+                    break;
     }
 
     // unit testing (required)
