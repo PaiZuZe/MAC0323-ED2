@@ -31,13 +31,17 @@ public class Percolation {
         if (row >= this.size || col >= this.size)
             throw new java.lang.IllegalArgumentException("open: Out of bounds.\n");
 
+        //If it was already open, we do nothing.
+        if (this.grid[row][col] == 0)
+            return;
+
         this.grid[row][col] = 0;
         this.num_opens += 1;
         //Added two new parts to our UF, this way we can check if percolates in O(1).
         if (row == 0)
-            UF.union( this.size * this.size, row * this.size + col);
+            UF.union(this.size * this.size, row * this.size + col);
         if (row == this.size - 1)
-            UF.union( this.size * this.size + 1, row * this.size + col);
+            UF.union(this.size * this.size + 1, row * this.size + col);
 
         if (row -1 >= 0 && this.grid[row - 1][col] == 0)
             UF.union((row - 1) * this.size + col , row * this.size + col);
