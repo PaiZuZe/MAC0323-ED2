@@ -1,9 +1,10 @@
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+import edu.princeton.cs.algs4.StdRandom;
 
 public class Percolation {
-    private byte[][] matrix;
+    private byte[][] grid;
     private int num_opens;
     private int size;
     private WeightedQuickUnionUF UF;
@@ -13,14 +14,15 @@ public class Percolation {
         if (n <= 0)
             throw new java.lang.IllegalArgumentException("Percolation: n must be larger than 0.\n");
 
-        this.matrix = new byte[n][n];
+        this.grid = new byte[n][n];
         this.size = n;
-        this.num_opens = n*n;
-        this.llastOpened = -1;
+        this.num_opens = 0;
+
         for (int i = 0; i < this.size; i++)
             for (int j = 0; j < this.size; j++)
-                this.matrix[i][j] = 1;
-        UF = new WeightedQuickUnionUF(this.num_opens);
+                this.grid[i][j] = 1;
+
+        UF = new WeightedQuickUnionUF(n*n + 2);
         return;
     }
 
@@ -29,17 +31,21 @@ public class Percolation {
         if (row >= this.size || col >= this.size)
             throw new java.lang.IllegalArgumentException("open: Out of bounds.\n");
 
-        this.matrix[row][col] = 0;
-        this.num_opens -= 1;
+        this.grid[row][col] = 0;
+        this.num_opens += 1;
+        //Added two new parts to our UF, this way we can check if percolates in O(1).
+        if (row == 0)
+            UF.union( this.size * this.size, row * this.size + col);
+        if (row == this.size - 1)
+            UF.union( this.size * this.size + 1, row * this.size + col);
 
-
-        if (row -1 >= 0 && this.matrix[row - 1][col] == 0)
+        if (row -1 >= 0 && this.grid[row - 1][col] == 0)
             UF.union((row - 1) * this.size + col , row * this.size + col);
-        if (col + 1 < this.size && this.matrix[row][col + 1] == 0)
+        if (col + 1 < this.size && this.grid[row][col + 1] == 0)
             UF.union(row * this.size + col + 1 , row * this.size + col);
-        if (row + 1 < this.size && this.matrix[row + 1][col] == 0)
+        if (row + 1 < this.size && this.grid[row + 1][col] == 0)
             UF.union((row + 1) * this.size + col , row * this.size + col);
-        if (col - 1 >= 0  && this.matrix[row][col - 1] == 0)
+        if (col - 1 >= 0  && this.grid[row][col - 1] == 0)
             UF.union(row * this.size + col - 1 , row * this.size + col);
 
         return;
@@ -50,7 +56,7 @@ public class Percolation {
         if (row >= this.size || col >= this.size)
             throw new java.lang.IllegalArgumentException("isOpen: Out of bounds.\n");
 
-        return this.matrix[row][col] == 0;
+        return this.grid[row][col] == 0;
     }
 
     // is the site (row, col) full?
@@ -58,7 +64,7 @@ public class Percolation {
         if (row >= this.size || col >= this.size)
             throw new java.lang.IllegalArgumentException("isFull: Out of bounds.\n");
 
-        return this.matrix[row][col] == 1;
+        return this.grid[row][col] == 1;
     }
 
     // returns the number of open sites
@@ -68,22 +74,22 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        for (i = 0; i < this.size; i++)
-            for (j = 0; j < this.size; j++)
-                if (isOpen(0, i))
-                    if (UF.connected(i, (n-1)*n + j)
-                        return true
-                else
-                    break;
+        return UF.connected(this.size * this.size, this.size * this.size + 1);
     }
 
     // unit testing (required)
     public static void main(String[] args) {
         Percolation test = new Percolation(Integer.parseInt(args[0]));
-        StdOut.print(test.isFull(0,0) + "\n");
+
+        StdOut.print("isFull: " + test.isFull(0,0) + "\n");
+        StdOut.print("isOpem: " + test.isOpen(0,0) + "\n");
+
         test.open(0,0);
-        StdOut.print(test.isFull(0,0) + "\n");
 
-
+        StdOut.print("isFull: " + test.isFull(0,0) + "\n");
+        StdOut.print("isOpem: " + test.isOpen(0,0) + "\n");
+        while (!test.percolates())
+            test.open(StdRandom.uniform(Integer.parseInt(args[0])), StdRandom.uniform(Integer.parseInt(args[0])));
+        return;
     }
 }
