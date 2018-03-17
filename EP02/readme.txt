@@ -1,15 +1,15 @@
 /******************************************************************************
- *  Name:     
- *  NetID:    
- *  Precept:  
+ *  Name:     Victor Chiaradia Gramuglia Araujo
+ *  NetID:    9793756
+ *  Precept:
  *
  *  Partner Name:    N/A
  *  Partner NetID:   N/A
  *  Partner Precept: N/A
- * 
- *  Operating system:
- *  Compiler:
- *  Text editor / IDE:
+ *
+ *  Operating system: Linux
+ *  Compiler: openjdk-8
+ *  Text editor / IDE: Atom
  *
  *  Have you taken (part of) this course before:
  *  Have you taken (part of) the Coursera course Algorithm, Part I:
@@ -25,8 +25,10 @@ Programming Assignment 1: Percolation
  *  Describe how you implemented Percolation.java. How did you check
  *  whether the system percolates?
  *****************************************************************************/
-
-
+Usando a sugestão nos slides do curso de princeton, dois nodes extra foram feitos. Um deles
+ligado a fileira de cima e o outro a de baixo. Sempre que um node era aberto, o metodo union
+é usado nele e em seus vizinhos. Para ver se um sistema percola em O(1) basta ver se os dois
+nodes extra estão conectados.
 
 /******************************************************************************
  *  Perform computational experiments to estimate the running time of
@@ -65,7 +67,7 @@ Programming Assignment 1: Percolation
 
 
 /******************************************************************************
- *  Using the empirical data from the above two tables, give a formula 
+ *  Using the empirical data from the above two tables, give a formula
  *  (using tilde notation) for the running time (in seconds) of
  *  PercolationStats.java as function of both n and T, such as
  *
@@ -77,7 +79,7 @@ Programming Assignment 1: Percolation
  *
  *****************************************************************************/
 
-QuickFindUF running time (in seconds) as a function of n and T:  ~ 
+QuickFindUF running time (in seconds) as a function of n and T:  ~
 
 
 /******************************************************************************
@@ -107,11 +109,11 @@ QuickFindUF running time (in seconds) as a function of n and T:  ~
 ...
 
 
-WeightedQuickUnionUF running time (in seconds) as a function of n and T:  ~ 
+WeightedQuickUnionUF running time (in seconds) as a function of n and T:  ~
 
 
 
- 
+
 
 /**********************************************************************
  *  How much memory (in bytes) does a Percolation object (which uses
@@ -125,7 +127,7 @@ WeightedQuickUnionUF running time (in seconds) as a function of n and T:  ~
 /******************************************************************************
  *  Known bugs / limitations.
  *****************************************************************************/
-
+N/A
 
 
 
@@ -135,17 +137,18 @@ WeightedQuickUnionUF running time (in seconds) as a function of n and T:  ~
  *  include any help from people (including course staff, lab TAs,
  *  classmates, and friends) and attribute them by name.
  *****************************************************************************/
+N/A
+
+/******************************************************************************
+ *  Describe any serious problems you encountered.
+ *****************************************************************************/
+N/A
+
 
 
 /******************************************************************************
- *  Describe any serious problems you encountered.                    
+ *  List any other comments here. Feel free to provide any feedback
+ *  on how much you learned from doing the assignment, and whether
+ *  you enjoyed doing it.
  *****************************************************************************/
-
-
-
-
-/******************************************************************************
- *  List any other comments here. Feel free to provide any feedback   
- *  on how much you learned from doing the assignment, and whether    
- *  you enjoyed doing it.                                             
- *****************************************************************************/
+N/A

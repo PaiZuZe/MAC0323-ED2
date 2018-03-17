@@ -11,6 +11,8 @@ public class PercolationStats {
 
     // perform independent trials on an n-by-n grid
     public PercolationStats(int n, int trials) {
+        if (n <= 0 || trials <= 0)
+            throw new java.lang.IllegalArgumentException("PercolationStats: n and trials must be > 0.\n");
         this.numTrials = trials;
         this.openSites = new double[trials];
 
