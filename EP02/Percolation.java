@@ -68,7 +68,7 @@ public class Percolation {
         if (row >= this.size || col >= this.size)
             throw new java.lang.IllegalArgumentException("isFull: Out of bounds.\n");
 
-        return this.grid[row][col] == 1;
+        return UF.connected(this.size * this.size, this.size * row + col);
     }
 
     // returns the number of open sites
@@ -86,12 +86,12 @@ public class Percolation {
         Percolation test = new Percolation(Integer.parseInt(args[0]));
 
         StdOut.print("isFull: " + test.isFull(0,0) + "\n");
-        StdOut.print("isOpem: " + test.isOpen(0,0) + "\n");
+        StdOut.print("isOpen: " + test.isOpen(0,0) + "\n");
 
         test.open(0,0);
 
         StdOut.print("isFull: " + test.isFull(0,0) + "\n");
-        StdOut.print("isOpem: " + test.isOpen(0,0) + "\n");
+        StdOut.print("isOpen: " + test.isOpen(0,0) + "\n");
         while (!test.percolates())
             test.open(StdRandom.uniform(Integer.parseInt(args[0])), StdRandom.uniform(Integer.parseInt(args[0])));
         return;
