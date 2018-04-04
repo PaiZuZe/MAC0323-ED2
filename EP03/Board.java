@@ -36,19 +36,23 @@ public class Board {
     public int hamming() {
         int out_tiles = 0;
         for (int i = 0; i < this.n; i++)
-            for (int j = 0; < this.n; j++)
+            for (int j = 0; j < this.n; j++)
                 if (i * this.size + j + 1 != this.board[i][j])
                     out_tiles += 1;
         return out_tiles;
     }
     // sum of Manhattan distances between tiles and goal
     public int manhattan() {
-
+        int tot_manha = 0;
+        for (int i = 0; i < this.n; i++)
+            for (int j = 0; j < this.n; j++)
+                tot_manha += single_manhathan(i, j);
+        return tot_manha;
     }
     // is this board the goal board?
     public boolean isGoal() {
         for (int i = 0; i < this.n; i++)
-            for (int j = 0; < this.n; j++)
+            for (int j = 0; j < this.n; j++)
                 if (i * this.size + j + 1 != this.board[i][j])
                     return false;
         return true;
