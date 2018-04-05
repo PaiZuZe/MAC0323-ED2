@@ -22,7 +22,13 @@ public class Board {
     }
     // string representation of this board
     public String toString() {
-
+        String s_matrix = this.n + "\n";
+        for (int i = 0; i < this.n; i++) {
+            for (int j = 0; j < this.n; j++)
+                s_matrix += " " + this.board[i][j];
+            s_matrix += "\n";
+        }
+        return s_matrix;
     }
     // tile at (row, col) or 0 if blank
     public int tileAt(int row, int col) {
@@ -59,6 +65,7 @@ public class Board {
     }
      // does this board equal y?
     public boolean equals(Object y) {
+        
 
     }
     // all neighboring boards
