@@ -1,7 +1,7 @@
 import java.lang.Math;
 
 public class Board {
-    private int n;
+    private int n, x0, y0;
     private int[][] board;
 
     private int single_manhathan(int x, int y) {
@@ -11,22 +11,38 @@ public class Board {
     }
 
     private class BoardIterator implements Iterator<Board> {
-        private Node current;
+        private int num_other_boards = 4;
+        private int neigh_N = neigh_S = neigh_E = neigh_W = 1;
 
-        public DequeIterator() {
-            this.current = first;
+        public BoardIterator() {
+            if (this.i0 == 0)  {
+                neigh_N = 0;
+                num_other_boards -= 1;
+            }
+            if (this.i0 == this.n -1) {
+                neigh_S = 0;
+                num_other_boards -= 1;
+            }
+            if (this.j0 == 0) {
+                neigh_W = 0;
+                num_other_boards -= 1;
+            }
+            if (this.j0 == this.n -1) {
+                neigh_E = 0;
+                num_other_boards -= 1;
+            }
         }
 
         public boolean hasNext() {
-            return this.current != null;
+            return num_other_boards;
         }
-        public Item next() {
+
+        public Board next() {
             if (!hasNext())
                 throw new java.util.NoSuchElementException("Board has no neighbors left.\n");
-            Node temp = this.current;
-            this.current = this.current.next;
-            return temp.data;
+
         }
+
         public void remove() {
             throw new java.lang.UnsupportedOperationException("Invalid operation.\n");
         }
@@ -38,9 +54,15 @@ public class Board {
     public Board(int[][] tiles) {
         this.n = tiles[0].lenth;
         board = new int[this.n][this.n];
-        for (int i = 0; i < this.n; i++)
-            for (int j = 0; j < this.n; j++)
-                thos.board[i][j] = tiles[i][j];
+        for (int i = 0; i < this.n; i++) {
+            for (int j = 0; j < this.n; j++) {
+                this.board[i][j] = tiles[i][j];
+                if (tiles[i][j] == 0) {
+                    i0 = i;
+                    j0 = j;
+                }
+            }
+        }
         return;
     }
 
