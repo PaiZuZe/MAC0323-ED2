@@ -1,7 +1,7 @@
 import java.lang.Math;
 
 public class Board {
-    private int n, x0, y0;
+    private int n, i0, j0;
     private int[][] board;
 
     private int single_manhathan(int x, int y) {
@@ -10,37 +10,49 @@ public class Board {
         return math.abs(x - x_value) + math.abs(y - y_value);
     }
 
+    private int[][] swapp(int[][] board, int oi, int oj, int ni, int nj) {
+        int temp = board[oi][oj];
+        board[oi][oj] = board[ni][nj];
+        board[ni][nj] = temp;
+        return board;
+    }
+
     private class BoardIterator implements Iterator<Board> {
-        private int num_other_boards = 4;
-        private int neigh_N = neigh_S = neigh_E = neigh_W = 1;
+        private Board[] neighbors = new Board[4];
+        private int[][] copy = new int[this.n][this.n];
+        private int num_other_boards = nxt = 0;
 
         public BoardIterator() {
-            if (this.i0 == 0)  {
-                neigh_N = 0;
-                num_other_boards -= 1;
+            for (int i = 0; i < this.n; i++)
+                for (int j = 0; j < this.n; j++)
+                    copy = this.board[i][j];
+
+            if (this.i0 != 0) {
+                neighbors[num_other_boards++] = Board(swap(copy, i0, j0, i0 - 1, j0));
+                copy = swapp(copy, i0, j0, i0 - 1, j0);
             }
-            if (this.i0 == this.n -1) {
-                neigh_S = 0;
-                num_other_boards -= 1;
+            if (this.i0 != this.n -1) {
+                neighbors[num_other_boards++] = Board(swap(copy, i0, j0, i0 + 1, j0));
+                copy = swap(copy, i0, j0, i0 + 1, j0);
             }
-            if (this.j0 == 0) {
-                neigh_W = 0;
-                num_other_boards -= 1;
+            if (this.j0 != 0) {
+                neighbors[num_other_boards++] = Board(swap(copy, i0, j0, i0, j0 - 1));
+                copy = swap(copy, i0, j0, i0, j0 - 1);
             }
-            if (this.j0 == this.n -1) {
-                neigh_E = 0;
-                num_other_boards -= 1;
+            if (this.j0 != this.n -1) {
+                neighbors[num_other_boards++] = Board(swap(copy, i0, j0, i0, j0 + 1));
+                copy = swap(copy, i0, j0, i0, j0 + 1);
             }
         }
 
         public boolean hasNext() {
-            return num_other_boards;
+            return num_other_boards != nxt;
         }
 
         public Board next() {
             if (!hasNext())
                 throw new java.util.NoSuchElementException("Board has no neighbors left.\n");
-
+            return neighbors[nxt++];
         }
 
         public void remove() {
@@ -79,7 +91,7 @@ public class Board {
 
     // tile at (row, col) or 0 if blank
     public int tileAt(int row, int col) {
-        if (0 <= row < this.n or 0 <= col < this.n)
+        if (0 <= row && row < this.n && 0 <= col && row < this.n)
             throw new java.lang.IllegalArgumentException("col or row are not in the right range.\n");
         return this.board[row][col];
     }
@@ -94,7 +106,7 @@ public class Board {
         int out_tiles = 0;
         for (int i = 0; i < this.n; i++)
             for (int j = 0; j < this.n; j++)
-                if (i * this.size + j + 1 != this.board[i][j] and this.board[i][j] != 0)
+                if (i * this.size + j + 1 != this.board[i][j] && this.board[i][j] != 0)
                     out_tiles += 1;
         return out_tiles;
     }
@@ -131,7 +143,7 @@ public class Board {
 
     // all neighboring boards
     public Iterable<Board> neighbors() {
-
+        return new BoardIterator();
     }
 
     // is this board solvable?
