@@ -7,10 +7,10 @@ public class Board {
     private int n, i0, j0;
     private int[][] board;
 
-    private int single_manhathan(int x, int y) {
-        int x_value = this.board[x][y]%this.n;
-        int y_value = this.board[x][y]/this.n;
-        return Math.abs(x - x_value) + Math.abs(y - y_value);
+    private int single_manhathan(int i, int j) {
+        int j_value = (this.board[i][j] - 1)%this.n;
+        int i_value = (this.board[i][j] - 1)/this.n;
+        return Math.abs(i - i_value) + Math.abs(j - j_value);
     }
 
     private int n_inversions() {
@@ -113,7 +113,7 @@ public class Board {
 
     // tile at (row, col) or 0 if blank
     public int tileAt(int row, int col) {
-        if (row >= 0 && row < this.n &&  col >= 0 && col < this.n)
+        if (row < 0 && row >= this.n &&  col < 0 && col >= this.n)
             throw new java.lang.IllegalArgumentException("col or row are not in the right range.\n");
         return this.board[row][col];
     }
@@ -189,8 +189,8 @@ public class Board {
         StdOut.print(bobs.size() + "\n");
         StdOut.print(bobs.manhattan() + "\n");
         StdOut.print(bobs.hamming() + "\n");
-        //StdOut.print(bobs.tileAt(1,1) + "\n");
-
-        StdOut.print("oi\n");
+        StdOut.print(bobs.tileAt(1,1) + "\n");
+        for (Board a : bobs.neighbors())
+            StdOut.print(a.toString());
     }
 }
