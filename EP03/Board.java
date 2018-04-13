@@ -1,5 +1,7 @@
 import java.lang.Math;
 import java.util.Iterator;
+import edu.princeton.cs.algs4.StdOut;
+
 
 public class Board {
     private int n, i0, j0;
@@ -111,7 +113,7 @@ public class Board {
 
     // tile at (row, col) or 0 if blank
     public int tileAt(int row, int col) {
-        if (0 <= row && row < this.n && 0 <= col && row < this.n)
+        if (row >= 0 && row < this.n &&  col >= 0 && col < this.n)
             throw new java.lang.IllegalArgumentException("col or row are not in the right range.\n");
         return this.board[row][col];
     }
@@ -180,6 +182,15 @@ public class Board {
 
     // unit testing (required)
     public static void main(String[] args) {
+        int[][] bob = {{8, 1, 3}, {4, 0, 2}, {7, 6, 5}};
+        Board bobs = new Board(bob);
+        StdOut.print(bobs.toString());
+        StdOut.print(bobs.isGoal() + "\n");
+        StdOut.print(bobs.size() + "\n");
+        StdOut.print(bobs.manhattan() + "\n");
+        StdOut.print(bobs.hamming() + "\n");
+        //StdOut.print(bobs.tileAt(1,1) + "\n");
 
+        StdOut.print("oi\n");
     }
 }
