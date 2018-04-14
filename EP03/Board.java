@@ -16,12 +16,15 @@ public class Board {
     private int n_inversions() {
         int inversions = 0;
         for (int i = 0; i < this.n; i++)
-            for (int j = 0; j < this.n; j++)
-                for (int k = i; k < this.n; k++)
-                    for (int l = j + 1; j < this.n; l++)
-                        if (this.board[i][j] > this.board[k][l])
+            for (int j = 0; j < this.n; j++) {
+                for (int l = j; l < this.n; l++)
+                    if (this.board[i][j] > this.board[i][l] && this.board[i][l] != 0)
+                        inversions += 1;
+                for (int k = i + 1; k < this.n; k++)
+                    for (int l = 0; l < this.n; l++)
+                        if (this.board[i][j] > this.board[k][l] && this.board[k][l] != 0)
                             inversions += 1;
-
+            }
         return inversions;
     }
 
@@ -148,10 +151,8 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-        for (int i = 0; i < this.n; i++)
-            for (int j = 0; j < this.n; j++)
-                if (i * this.n + j + 1 != this.board[i][j])
-                    return false;
+        if (hamming() != 0)
+            return false;
         return true;
     }
 
