@@ -116,7 +116,7 @@ public class Board {
 
     // tile at (row, col) or 0 if blank
     public int tileAt(int row, int col) {
-        if (row < 0 && row >= this.n &&  col < 0 && col >= this.n)
+        if (row < 0 || row >= this.n ||  col < 0 || col >= this.n)
             throw new java.lang.IllegalArgumentException("col or row are not in the right range.\n");
         return this.board[row][col];
     }
@@ -174,7 +174,7 @@ public class Board {
     // is this board solvable?
     public boolean isSolvable() {
         int inver = n_inversions();
-        if (this.n % 2 == 0 && inver + this.i0 % 2 == 1)
+        if (this.n % 2 == 0 && (inver + this.i0 )% 2 == 1)
             return true;
         if (this.n % 2 == 1 && inver % 2 == 0)
             return true;
