@@ -52,7 +52,7 @@ public class KdTreeST<Value> {
             return root;
         }
 
-        if (level % 2 == 1) {
+        if (level % 2 == 0) {
             if (p.x() < root.key.x())
                 root.left = put(root.left, p, val, level + 1);
             else
@@ -81,7 +81,7 @@ public class KdTreeST<Value> {
         if (root.key.equals(p))
             return root.value;
 
-        if (level % 2 == 1) {
+        if (level % 2 == 0) {
             if (p.x() < root.key.x())
                 return get(root.left, p, level + 1);
             else
@@ -109,7 +109,7 @@ public class KdTreeST<Value> {
         if (root.key.equals(p))
             return true;
 
-        if (level % 2 == 1) {
+        if (level % 2 == 0) {
             if (p.x() < root.key.x())
                 return contains(root.left, p, level + 1);
             else
@@ -150,12 +150,57 @@ public class KdTreeST<Value> {
 
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
+        return range(rect, p, this.root, 0, this.maxX, this.mimX, this.maxY, this.mimY);
         return null;
+    }
+
+    private void range(RectHV rect, Node node, int level, double maX, double miX, double maY, double miY, Queue<Point2D> inRect) {
+        if (node == null)
+            return;
+
+        if (rect.contains(node.key))
+            inRect.enqueue(node.key);
+
+        if (level % 2 == 0) {
+            if (rect.intersects(RectHV()))
+                range(rect, node.left, level + 1, node.key.x(), miX, maY, miY, inRect);
+            if (rect.intersects(RectHV()))
+                range(rect, node.right, level + 1, maX, node.key.x(), maY, miY, inRect);
+        }
+
+        else {
+            if (rect.intersects(RectHV()))
+                range(rect, node.left, level + 1, maX, miX, node.key.y(), miY, inRect);
+            if (rect.intersects(RectHV()))
+                range(rect, node.right, level + 1, maX, miX, maY, node.key.y(), inRect);
+        }
+        return;
     }
 
     // a nearest neighbor of point p; null if the symbol table is empty
     public Point2D nearest(Point2D p) {
-        return null;
+        return nearest(p, p, this.root, 0, this.maxX, this.mimX, this.maxY, this.mimY);
+    }
+
+    private Point2D nearest(Point2D p, Point2D closest, Node node, int level, double maX, double miX, double maY, double miY) {
+        if (p.equals(closest) || closest.distanceSquaredTo(p) > node.key.distanceSquaredTo(p))
+            closest = node.key;
+
+        if (level % 2 == 0) {
+            if (rect.intersects(RectHV()))
+                closest = range(rect, node.left, level + 1, node.key.x(), miX, maY, miY, inRect);
+            if (rect.intersects(RectHV()))
+                closest = range(rect, node.right, level + 1, maX, node.key.x(), maY, miY, inRect);
+        }
+        else {
+            if (rect.intersects(RectHV()))
+                closest = range(rect, node.left, level + 1, maX, miX, node.key.y(), miY, inRect);
+            if (rect.intersects(RectHV()))
+                closest = range(rect, node.right, level + 1, maX, miX, maY, node.key.y(), inRect);
+        }
+
+        return closest;
+
     }
 
     public Iterable<Point2D> nearest(Point2D p, int k) {
