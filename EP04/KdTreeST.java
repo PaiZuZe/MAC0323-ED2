@@ -1,4 +1,6 @@
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.RectHV;
 
 public class KdTreeST<Value> {
     private Node root;
@@ -28,7 +30,8 @@ public class KdTreeST<Value> {
 
     // is the symbol table empty?
     public boolean isEmpty() {
-        return size;
+        if (size == 0) return true;
+        return false;
     }
 
     // number of points
@@ -50,14 +53,14 @@ public class KdTreeST<Value> {
         }
 
         if (level % 2 == 1) {
-            if (p.x < root.key.x)
+            if (p.x() < root.key.x())
                 root.left = put(root.left, p, val, level + 1);
             else
                 root.right = put(root.right, p, val, level + 1);
         }
 
         else {
-            if (p.y < root.key.y)
+            if (p.y() < root.key.y())
                 root.left = put(root.left, p, val, level + 1);
             else
                 root.right = put(root.right, p, val, level + 1);
@@ -75,18 +78,18 @@ public class KdTreeST<Value> {
         if (root == null)
             return null;
 
-        if (root.key.compareTo(p))
+        if (root.key.equals(p))
             return root.value;
 
         if (level % 2 == 1) {
-            if (p.x < root.key.x)
+            if (p.x() < root.key.x())
                 return get(root.left, p, level + 1);
             else
                 return get(root.right, p, level + 1);
         }
 
         else {
-            if (p.y < root.key.y)
+            if (p.y() < root.key.y())
                 return get(root.left, p, level + 1);
             else
                 return get(root.right, p, level + 1);
@@ -103,48 +106,64 @@ public class KdTreeST<Value> {
         if (root == null)
             return false;
 
-        if (root.key.compareTo(p))
+        if (root.key.equals(p))
             return true;
 
         if (level % 2 == 1) {
-            if (p.x < root.key.x)
-                return get(root.left, p, level + 1);
+            if (p.x() < root.key.x())
+                return contains(root.left, p, level + 1);
             else
-                return get(root.right, p, level + 1);
+                return contains(root.right, p, level + 1);
         }
 
         else {
-            if (p.y < root.key.y)
-                return get(root.left, p, level + 1);
+            if (p.y() < root.key.y())
+                return contains(root.left, p, level + 1);
             else
-                return get(root.right, p, level + 1);
+                return contains(root.right, p, level + 1);
         }
 
     }
 
     // all points in the symbol table
     public Iterable<Point2D> points() {
+        if (this.isEmpty())
+            return null;
+
         Queue<Point2D> all_keys = new Queue<Point2D>();
-        
+        Queue<Node> frontier = new Queue<Node>();
+        Node temp = this.root;
+
+        frontier.enqueue(temp);
+        while (!frontier.isEmpty()) {
+            temp = frontier.dequeue();
+            if (temp == null)
+                continue;
+            all_keys.enqueue(temp.key);
+            frontier.enqueue(temp.left);
+            frontier.enqueue(temp.right);
+        }
+
+        return all_keys;
 
     }
 
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
-
+        return null;
     }
 
     // a nearest neighbor of point p; null if the symbol table is empty
     public Point2D nearest(Point2D p) {
-
+        return null;
     }
 
     public Iterable<Point2D> nearest(Point2D p, int k) {
-
+        return null;
     }
 
     // unit testing (required)
     public static void main(String[] args) {
-
+        return;
     }
 }
