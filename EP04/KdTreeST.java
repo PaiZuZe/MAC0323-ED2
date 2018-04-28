@@ -1,4 +1,6 @@
+import java.util.Comparator;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.MaxPQ;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 
@@ -6,6 +8,24 @@ public class KdTreeST<Value> {
     private Node root;
     private int size;
     private double maxX, mimX, maxY, mimY;
+
+    public class Point2Dcomparator implements Comparator<Point2D> {
+        private Point2D origin;
+        public Point2Dcomparator(Point2D org) {
+            origin = org;
+            return;
+        }
+
+        @Override
+        public int compare(Point2D a, Point2D b) {
+            if (a.distanceSquaredTo(origin) == b.distanceSquaredTo(origin))
+                return 0;
+            else if (a.distanceSquaredTo(origin) < b.distanceSquaredTo(origin))
+                return -1;
+            else
+                return 1;
+        }
+    }
 
     private class Node {
         private Point2D key;
@@ -193,11 +213,17 @@ public class KdTreeST<Value> {
 
     // a nearest neighbor of point p; null if the symbol table is empty
     public Point2D nearest(Point2D p) {
+        if (this.isEmpty())
+            return null;
+
         return nearest(p, p, this.root, 0, this.maxX, this.mimX, this.maxY, this.mimY);
     }
 
     private Point2D nearest(Point2D p, Point2D closest, Node node, int level, double maX, double miX, double maY, double miY) {
         RectHV rect;
+
+        if(node == null)
+            return closest;
 
         if (p.equals(closest) || closest.distanceSquaredTo(p) > node.key.distanceSquaredTo(p))
             closest = node.key;
@@ -228,8 +254,55 @@ public class KdTreeST<Value> {
     }
 
     public Iterable<Point2D> nearest(Point2D p, int k) {
-        return null;
+        if (this.isEmpty())
+            return null;
+
+        MaxPQ<Point2D> kNearest = new MaxPQ<Point2D>(new Point2Dcomparator(p));
+        nearest(p, k, this.root, 0, this.maxX, this.mimX, this.maxY, this.mimY, kNearest);
+
+        return kNearest;
     }
+
+    private void nearest(Point2D p, int k, Node node, int level, double maX, double miX, double maY, double miY, MaxPQ<Point2D> kNearest) {
+        if (node == null)
+            return;
+
+        RectHV rect;
+
+        if (kNearest.size() <= k)
+            kNearest.insert(node.key);
+
+        else if (node.key.distanceSquaredTo(p) < kNearest.max().distanceSquaredTo(p)) {
+            kNearest.delMax();
+            kNearest.insert(node.key);
+        }
+
+        if (level % 2 == 0) {
+
+            rect = new RectHV(node.key.x(), miX, maY, miY);
+            if (rect.distanceSquaredTo(p) < kNearest.max().distanceSquaredTo(p))
+                nearest(p, k, node.left, level + 1, node.key.x(), miX, maY, miY, kNearest);
+
+            rect = new RectHV(maX, node.key.x(), maY, miY);
+            if (rect.distanceSquaredTo(p) < kNearest.max().distanceSquaredTo(p))
+                nearest(p, k, node.right, level + 1, maX, node.key.x(), maY, miY, kNearest);
+
+        }
+        else {
+
+            rect = new RectHV(maX, miX, node.key.y(), miY);
+            if (rect.distanceSquaredTo(p) < kNearest.max().distanceSquaredTo(p))
+                nearest(p, k, node.left, level + 1, maX, miX, node.key.y(), miY, kNearest);
+
+            rect = new RectHV(maX, miX, maY, node.key.y());
+            if (rect.distanceSquaredTo(p) < kNearest.max().distanceSquaredTo(p))
+                nearest(p, k, node.right, level + 1, maX, miX, maY, node.key.y(), kNearest);
+
+        }
+
+        return;
+    }
+
 
     // unit testing (required)
     public static void main(String[] args) {
