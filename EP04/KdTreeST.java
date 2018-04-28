@@ -62,6 +62,9 @@ public class KdTreeST<Value> {
 
     // associate the value val with point p
     public void put(Point2D p, Value val) {
+        if (p == null || val == null)
+            throw new java.lang.IllegalArgumentException("p or val can't be null.\n");
+
         if (this.size == 0) {
             this.maxX = p.x();
             this.mimX = p.x();
@@ -104,6 +107,9 @@ public class KdTreeST<Value> {
 
     // value associated with point p
     public Value get(Point2D p) {
+        if (p == null)
+            throw new java.lang.IllegalArgumentException("p can't be null.\n");
+
         return get(root, p, 0);
     }
 
@@ -132,6 +138,9 @@ public class KdTreeST<Value> {
 
     // does the symbol table contain point p?
     public boolean contains(Point2D p) {
+        if (p == null)
+            throw new java.lang.IllegalArgumentException("p can't be null.\n");
+
         return contains(root, p, 0);
     }
 
@@ -183,6 +192,9 @@ public class KdTreeST<Value> {
 
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
+        if (rect == null)
+            throw new java.lang.IllegalArgumentException("rect can't be null.\n");
+
         Queue<Point2D> inRect = new Queue<Point2D>();
         range(rect, this.root, 0, this.maxX, this.mimX, this.maxY, this.mimY, inRect);
         return inRect;
@@ -213,6 +225,9 @@ public class KdTreeST<Value> {
 
     // a nearest neighbor of point p; null if the symbol table is empty
     public Point2D nearest(Point2D p) {
+        if (p == null)
+            throw new java.lang.IllegalArgumentException("p can't be null.\n");
+
         if (this.isEmpty())
             return null;
 
@@ -254,6 +269,9 @@ public class KdTreeST<Value> {
     }
 
     public Iterable<Point2D> nearest(Point2D p, int k) {
+        if (p == null)
+            throw new java.lang.IllegalArgumentException("p can't be null.\n");
+
         if (this.isEmpty())
             return null;
 

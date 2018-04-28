@@ -47,17 +47,26 @@ public class PointST<Value> {
 
     // associate the value val with point p
     public void put(Point2D p, Value val) {
+        if (p == null || val == null)
+            throw new java.lang.IllegalArgumentException("p or val can't be null.\n");
+
         this.ST.put(p, val);
         return;
     }
 
     // value associated with point p
     public Value get(Point2D p) {
+        if (p == null)
+            throw new java.lang.IllegalArgumentException("p can't be null.\n");
+
         return this.ST.get(p);
     }
 
     // does the symbol table contain point p?
     public boolean contains(Point2D p) {
+        if (p == null)
+            throw new java.lang.IllegalArgumentException("p can't be null.\n");
+
         return this.ST.contains(p);
     }
 
@@ -68,6 +77,9 @@ public class PointST<Value> {
 
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
+        if (rect == null)
+            throw new java.lang.IllegalArgumentException("rect can't be null.\n");
+
         this.inRect = new Queue<Point2D>();
         for (Point2D temp : this.ST.keys())
             if (rect.contains(temp))
@@ -77,8 +89,12 @@ public class PointST<Value> {
 
     // a nearest neighbor of point p; null if the symbol table is empty
     public Point2D nearest(Point2D p) {
+        if (p == null)
+            throw new java.lang.IllegalArgumentException("p can't be null.\n");
+
         if (this.isEmpty())
             return null;
+
         Point2D closest = p;
         for (Point2D temp : this.ST.keys())
             if (p.equals(closest) || p.distanceSquaredTo(temp) < p.distanceSquaredTo(closest))
@@ -87,8 +103,12 @@ public class PointST<Value> {
     }
 
     public Iterable<Point2D> nearest(Point2D p, int k) {
+        if (p == null)
+            throw new java.lang.IllegalArgumentException("p can't be null.\n");
+
         if (this.isEmpty())
             return null;
+
         this.kNearest = new MaxPQ<Point2D>(new Point2Dcomparator(p));
         for (Point2D temp : this.ST.keys()) {
             if (temp.equals(p))
