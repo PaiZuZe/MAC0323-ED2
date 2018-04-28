@@ -106,15 +106,16 @@ public class PointST<Value> {
         if (p == null)
             throw new java.lang.IllegalArgumentException("p can't be null.\n");
 
-        if (this.isEmpty())
-            return null;
-
         this.kNearest = new MaxPQ<Point2D>(new Point2Dcomparator(p));
+
+        if (this.isEmpty())
+            return kNearest;
+
         for (Point2D temp : this.ST.keys()) {
             if (temp.equals(p))
                 continue;
 
-            if (this.kNearest.size() <= k) {
+            if (this.kNearest.size() < k) {
                 kNearest.insert(temp);
                 continue;
             }

@@ -234,7 +234,7 @@ public class KdTreeST<Value> {
         return nearest(p, p, this.root, 0, this.mimX, this.mimY, this.maxX, this.maxY);
     }
 
-    private Point2D nearest(Point2D p, Point2D closest, Node node, int level, double maX, double miX, double maY, double miY) {
+    private Point2D nearest(Point2D p, Point2D closest, Node node, int level, double miX, double miY, double maX, double maY) {
         RectHV rect;
 
         if(node == null)
@@ -247,21 +247,22 @@ public class KdTreeST<Value> {
 
             rect = new RectHV(miX, miY, node.key.x(), maY);
             if (rect.distanceSquaredTo(p) < closest.distanceSquaredTo(p))
-                closest = nearest(p, closest, node.left, level + 1, node.key.x(), miX, maY, miY);
+                closest = nearest(p, closest, node.left, level + 1, miX, miY, node.key.x(), maY);
 
             rect = new RectHV(node.key.x(), miY, maX, maY);
             if (rect.distanceSquaredTo(p) < closest.distanceSquaredTo(p))
-                closest = nearest(p, closest, node.right, level + 1, maX, node.key.x(), maY, miY);
+                closest = nearest(p, closest, node.right, level + 1, node.key.x(), miY, maX, maY);
         }
+
         else {
 
             rect = new RectHV(miX, miY, maX, node.key.y());
             if (rect.distanceSquaredTo(p) < closest.distanceSquaredTo(p))
-                closest = nearest(p, closest, node.left, level + 1, maX, miX, node.key.y(), miY);
+                closest = nearest(p, closest, node.left, level + 1, miX, miY, maX, node.key.y());
 
             rect = new RectHV(miX, node.key.y(), maX, maY);
             if (rect.distanceSquaredTo(p) < closest.distanceSquaredTo(p))
-                closest = nearest(p, closest, node.right, level + 1, maX, miX, maY, node.key.y());
+                closest = nearest(p, closest, node.right, level + 1, miX, node.key.y(), maX, maY);
         }
 
         return closest;
@@ -272,22 +273,23 @@ public class KdTreeST<Value> {
         if (p == null)
             throw new java.lang.IllegalArgumentException("p can't be null.\n");
 
-        if (this.isEmpty())
-            return null;
-
         MaxPQ<Point2D> kNearest = new MaxPQ<Point2D>(new Point2Dcomparator(p));
+
+        if (this.isEmpty())
+            return kNearest;
+
         nearest(p, k, this.root, 0, this.mimX, this.mimY, this.maxX, this.maxY, kNearest);
 
         return kNearest;
     }
 
-    private void nearest(Point2D p, int k, Node node, int level, double maX, double miX, double maY, double miY, MaxPQ<Point2D> kNearest) {
+    private void nearest(Point2D p, int k, Node node, int level, double miX, double miY, double maX, double maY, MaxPQ<Point2D> kNearest) {
         if (node == null)
             return;
 
         RectHV rect;
 
-        if (kNearest.size() <= k)
+        if (kNearest.size() < k)
             kNearest.insert(node.key);
 
         else if (node.key.distanceSquaredTo(p) < kNearest.max().distanceSquaredTo(p)) {
@@ -299,22 +301,22 @@ public class KdTreeST<Value> {
 
             rect = new RectHV(miX, miY, node.key.x(), maY);
             if (rect.distanceSquaredTo(p) < kNearest.max().distanceSquaredTo(p))
-                nearest(p, k, node.left, level + 1, node.key.x(), miX, maY, miY, kNearest);
+                nearest(p, k, node.left, level + 1,  miX, miY, node.key.x(), maY, kNearest);
 
             rect = new RectHV(node.key.x(), miY, maX, maY);
             if (rect.distanceSquaredTo(p) < kNearest.max().distanceSquaredTo(p))
-                nearest(p, k, node.right, level + 1, maX, node.key.x(), maY, miY, kNearest);
+                nearest(p, k, node.right, level + 1,  node.key.x(), miY, maX, maY, kNearest);
 
         }
         else {
 
             rect = new RectHV(miX, miY, maX, node.key.y());
             if (rect.distanceSquaredTo(p) < kNearest.max().distanceSquaredTo(p))
-                nearest(p, k, node.left, level + 1, maX, miX, node.key.y(), miY, kNearest);
+                nearest(p, k, node.left, level + 1,  miX, miY, maX, node.key.y(), kNearest);
 
             rect = new RectHV(miX, node.key.y(), maX, maY);
             if (rect.distanceSquaredTo(p) < kNearest.max().distanceSquaredTo(p))
-                nearest(p, k, node.right, level + 1, maX, miX, maY, node.key.y(), kNearest);
+                nearest(p, k, node.right, level + 1,  miX, node.key.y(), maX, maY, kNearest);
 
         }
 
