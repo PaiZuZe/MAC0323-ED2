@@ -95,9 +95,9 @@ public class PointST<Value> {
         if (this.isEmpty())
             return null;
 
-        Point2D closest = p;
+        Point2D closest = null;
         for (Point2D temp : this.ST.keys())
-            if (p.equals(closest) || p.distanceSquaredTo(temp) < p.distanceSquaredTo(closest))
+            if (closest == null || p.distanceSquaredTo(temp) < p.distanceSquaredTo(closest))
                 closest = temp;
         return closest;
     }
@@ -112,8 +112,6 @@ public class PointST<Value> {
             return kNearest;
 
         for (Point2D temp : this.ST.keys()) {
-            if (temp.equals(p))
-                continue;
 
             if (this.kNearest.size() < k) {
                 kNearest.insert(temp);
