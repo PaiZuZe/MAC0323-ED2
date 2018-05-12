@@ -16,6 +16,7 @@ import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.MaxPQ;
 import java.util.Comparator;
 
 /**
@@ -45,6 +46,13 @@ public class MeuTST<Value extends Comparable<Value>> {
 
     private int n;              // size
     private Node<Value> root;   // root of TST
+
+    public class StringComparator implements Comparator<String> {
+        @Override
+        public int compare(String a, String b) {
+            return get(a).compareTo(get(b));
+        }
+    }
 
     private static class Node<Value> {
         private char c;                        // character
@@ -218,7 +226,24 @@ public class MeuTST<Value extends Comparable<Value>> {
      */
     // all keys starting with given prefix
     public Iterable<String> keysWithPrefixByValue(String prefix) {
-        return keysWithPrefix(prefix);
+        if (prefix == null) {
+            throw new IllegalArgumentException("calls keysWithPrefix() with null argument");
+        }
+        MaxPQ<String> PQ = new MaxPQ<String>(new StringComparator());
+        Node<Value> x = get(root, prefix, 0);
+        if (x == null) return PQ;
+        if (x.val != null) PQ.insert(prefix);
+        collect(x.mid, new StringBuilder(prefix), PQ);
+        return PQ;
+    }
+
+    private void collect(Node<Value> x, StringBuilder prefix, MaxPQ<String> PQ) {
+        if (x == null) return;
+        collect(x.left,  prefix, PQ);
+        if (x.val != null) PQ.insert(prefix.toString() + x.c);
+        collect(x.mid,   prefix.append(x.c), PQ);
+        prefix.deleteCharAt(prefix.length() - 1);
+        collect(x.right, prefix, PQ);
     }
 
 
