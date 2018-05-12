@@ -42,7 +42,7 @@ import java.util.Comparator;
  */
 // public class TST<Value> { MAC0323
 public class MeuTST<Value extends Comparable<Value>> {
-    
+
     private int n;              // size
     private Node<Value> root;   // root of TST
 
@@ -201,18 +201,18 @@ public class MeuTST<Value extends Comparable<Value>> {
 
     /**
      *  TAREFA: keysWithPrefixByValue():
-     * 
+     *
      *  Cria e retorna uma coleção iterável de strings.
      *
-     *  A coleção deve conter as strings que tem 'prefix' como 
-     *  prefixo. Além disso os strings na coleção devem estar 
-     *  em ordem decrescente de valor (val). 
-     * 
-     *  Sinta-se a vontade para: 
+     *  A coleção deve conter as strings que tem 'prefix' como
+     *  prefixo. Além disso os strings na coleção devem estar
+     *  em ordem decrescente de valor (val).
      *
-     *     - criar métodos auxiliares; 
+     *  Sinta-se a vontade para:
+     *
+     *     - criar métodos auxiliares;
      *     - criar classes auxiliares; e
-     *     - usar classes do algs4, e nesse caso não deixe 
+     *     - usar classes do algs4, e nesse caso não deixe
      *       de colocar o import correspondente.
      *
      */
@@ -220,8 +220,8 @@ public class MeuTST<Value extends Comparable<Value>> {
     public Iterable<String> keysWithPrefixByValue(String prefix) {
         return keysWithPrefix(prefix);
     }
-     
-    
+
+
     // all keys in subtrie rooted at x with given prefix
     private void collect(Node<Value> x, StringBuilder prefix, Queue<String> queue) {
         if (x == null) return;
@@ -245,7 +245,7 @@ public class MeuTST<Value extends Comparable<Value>> {
         collect(root, new StringBuilder(), 0, pattern, queue);
         return queue;
     }
- 
+
     private void collect(Node<Value> x, StringBuilder prefix, int i, String pattern, Queue<String> queue) {
         if (x == null) return;
         char c = pattern.charAt(i);
@@ -260,24 +260,59 @@ public class MeuTST<Value extends Comparable<Value>> {
         if (c == '.' || c > x.c) collect(x.right, prefix, i, pattern, queue);
     }
 
-    
+
     /**
      * TAREFA: delete()
-     *  
+     *
      * Não estava implementado. Hmm.
      *
      * Removes the key from the set if the key is present.
      * @param key the key
      * @throws NullPointerException if {@code key} is {@code null}
-     * 
-     * Utilize o método delete da classe TrieST como fonte de 
+     *
+     * Utilize o método delete da classe TrieST como fonte de
      * inspiração.
      */
     public void delete(String key) {
-        // TAREFA
+        if (key == null)
+            throw new NullPointerException("The key that must be removed can't be null.\n");
+        this.root = delete(this.root, key, 0);
+        return;
     }
 
-    
+    private Node<Value> delete (Node<Value> x, String key, int d) {
+        /*maybe the key is not in the trie.*/
+        if (x == null) return null;
+
+        char c = key.charAt(d);
+
+        if (c < x.c) {
+            x.left = delete(x.left, key, d);
+        }
+        else if (c > x.c) {
+            x.right = delete(x.right, key, d);
+        }
+        /*Got to go down*/
+        else if (c == x.c && d < key.length() - 1) {
+            x.mid = delete(x.mid, key, d + 1);
+        }
+
+        /*End of the word we were looking for.*/
+        else if (x.c == c && d == key.length() - 1){
+            if (x.val != null) {
+                x.val = null;
+                this.n -= 1;
+            }
+
+            if (x.left == null && x.mid == null && x.right == null) {
+                x = null;
+            }
+        }
+
+        return x;
+    }
+
+
     /**
      * Unit tests the {@code TST} data type.
      *
@@ -295,7 +330,7 @@ public class MeuTST<Value extends Comparable<Value>> {
             String query = in.readLine(); // read the next query
             terms.put(query, weight);     // construct the term
         }
-        
+
         StdOut.println(terms.size() + " itens (= pares chave-valor) na TST");
         StdOut.println("Teste interativo. Digite algo e tecle ENTER. Tecle crtl+d para encerrar,");
         // read in queries from standard input and print out the matching terms
@@ -326,11 +361,11 @@ public class MeuTST<Value extends Comparable<Value>> {
         st.put("surely",13);
         st.put("sur",0);
         st.put("the",8);
-        
+
         StdOut.println(st.size() + " itens: ");
         for (String key : st.keys())
             StdOut.println("   '" + key + "' : " + st.get(key));
-        
+
         st.delete("sea");
         StdOut.println("\n"+ st.size() + " itens depois de remover 'sea': ");
         for (String key : st.keys())
