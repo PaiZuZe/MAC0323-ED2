@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdIn;
 import java.util.Comparator;
 import edu.princeton.cs.algs4.MinPQ;
 
@@ -43,7 +44,7 @@ public class CircularSuffixArray {
     // circular suffix array of s
     public CircularSuffixArray(String s) {
         if (s == null)
-            throw new java.lang.IllegalArgumentException("Argument s can't be null.\n");
+            throw new java.lang.IllegalArgumentException("Arguments can't be null.\n");
         this.len = s.length();
         this.indexes = new int[this.len];
         this.pq = new MinPQ<helper>(new StringComparator(s, this.len));
@@ -68,7 +69,7 @@ public class CircularSuffixArray {
 
     // unit testing (required)
     public static void main(String[] args) {
-        CircularSuffixArray bob = new CircularSuffixArray("ABRACADABRA!");
+        CircularSuffixArray bob = new CircularSuffixArray(StdIn.readAll());
         for (int i = 0; i < bob.length(); i++) {
             StdOut.print(bob.index(i) + "\n");
         }
