@@ -8,14 +8,14 @@ public class MoveToFront {
     public static void encode() {
         char[] alphabet = new char[256];
         int i = 0;
-        char c = BinaryStdIn.readChar();
+        char c;
         for (i = 0; i < 256; i++) alphabet[i] = (char) i;
 
         while (!BinaryStdIn.isEmpty()) {
+            c = BinaryStdIn.readChar();
             for (i = 0; i < 256; i++) if (c == alphabet[i]) break;
             for (int j = i - 1; j >= 0; j--) alphabet[j + 1] = alphabet[j];
             alphabet[0] = c;
-            c = BinaryStdIn.readChar();
             BinaryStdOut.write( (char) i);
         }
         BinaryStdOut.flush();
