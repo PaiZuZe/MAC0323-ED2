@@ -44,11 +44,15 @@ public class BurrowsWheeler {
             }
         }
 
-        int first, i;
+        boolean guard = true;
+        int first, i, j;
+        int[] next;
         char c;
-        Helper[] freq = new Helper[256];
+        char[] sorted;
         String inputTxt = "";
+        Helper[] freq = new Helper[256];
 
+        //reads input, and creates aditional struct for the creation of next.
         for (i = 0; i < 256; i++) freq[i] = new Helper();
         first = BinaryStdIn.readInt();
         i = 0;
@@ -58,7 +62,25 @@ public class BurrowsWheeler {
             inputTxt += c;
             i++;
         }
-        //Se sorted[first] me da o prim, inputTxt[first] me da o último.
+
+        //creates next[] and sorted.
+        j = 0;
+        next = new int[inputTxt.length()];
+        sorted = new char[inputTxt.length()];
+        for (i = 0; i < 256; i++) {
+            if (freq[i].freq == 0) continue;
+            for (Integer temp : freq[i].poss) {
+                sorted[j] = (char) i;
+                next[j++] = temp;
+            }
+        }
+
+        //Prints original text.
+        for (i = 0; i != 0 || guard; i = next[i]) {
+            BinaryStdOut.write(sorted[next[i]]);
+            guard = false;
+        }
+        BinaryStdOut.flush();
 
     }
 
