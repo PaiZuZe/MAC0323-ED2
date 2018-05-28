@@ -1,23 +1,15 @@
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdIn;
 import java.util.Comparator;
-import edu.princeton.cs.algs4.MinPQ;
+import java.lang.Integer;
+import java.util.Arrays;
+
 
 public class CircularSuffixArray {
     private int len;
-    private int[] indexes;
-    private MinPQ<helper> pq;
+    private Integer[] indexes;
 
-    private class helper {
-        int pos;
-
-        private helper(int i) {
-            this.pos = i;
-            return;
-        }
-    }
-
-    public class StringComparator implements Comparator<helper>{
+    public class StringComparator implements Comparator<Integer>{
         private String s;
         private int n;
 
@@ -28,11 +20,11 @@ public class CircularSuffixArray {
         }
 
         @Override
-        public int compare(helper a, helper b) {
+        public int compare(Integer a, Integer b) {
             for (int i = 0; i < this.n; i++) {
-                if (this.s.charAt((a.pos + i) % this.n) == this.s.charAt((b.pos + i) % this.n))
+                if (this.s.charAt((a + i) % this.n) == this.s.charAt((b + i) % this.n))
                     continue;
-                else if (this.s.charAt((a.pos + i) % this.n) < this.s.charAt((b.pos + i) % this.n))
+                else if (this.s.charAt((a + i) % this.n) < this.s.charAt((b + i) % this.n))
                     return -1;
                 else
                     return 1;
@@ -45,14 +37,12 @@ public class CircularSuffixArray {
     public CircularSuffixArray(String s) {
         if (s == null)
             throw new java.lang.IllegalArgumentException("Arguments can't be null.\n");
-        this.len = s.length();
-        this.indexes = new int[this.len];
-        this.pq = new MinPQ<helper>(new StringComparator(s, this.len));
-        for (int i = 0; i < this.len; i++)
-            pq.insert(new helper(i));
 
-        for (int i = 0; i < this.len; i++)
-            this.indexes[i] = pq.delMin().pos;
+        this.len = s.length();
+        this.indexes = new Integer[this.len];
+        for (int i = 0; i < this.len; i++) indexes[i] = i;
+        Arrays.sort(indexes, new StringComparator(s, this.len));
+
     }
 
     // length of s
@@ -64,14 +54,19 @@ public class CircularSuffixArray {
     public int index(int i) {
         if (i < 0 || i >= this.len)
             throw new java.lang.IllegalArgumentException("Argument i out of bounds.\n");
+
         return indexes[i];
     }
 
     // unit testing (required)
     public static void main(String[] args) {
-        CircularSuffixArray bob = new CircularSuffixArray(StdIn.readAll());
-        for (int i = 0; i < bob.length(); i++) {
-            StdOut.print(bob.index(i) + "\n");
-        }
+        String s = StdIn.readAll();
+        CircularSuffixArray bob = new CircularSuffixArray(s);
+        if (args.length > 0)
+            if (args[0].compareTo("v") == 0)
+                for (int i = 0; i < bob.length(); i++) {
+                    for (int j = 0; j < bob.length(); j++) StdOut.print(s.charAt((bob.index(i) + j) % bob.length()));
+                    StdOut.print("\n");
+                }
     }
 }
