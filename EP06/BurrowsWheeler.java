@@ -76,8 +76,8 @@ public class BurrowsWheeler {
         }
 
         //Prints original text.
-        for (i = 0; i != 0 || guard; i = next[i]) {
-            BinaryStdOut.write(sorted[next[i]]);
+        for (i = first; i != first || guard; i = next[i]) {
+            BinaryStdOut.write(sorted[i]);
             guard = false;
         }
         BinaryStdOut.flush();
