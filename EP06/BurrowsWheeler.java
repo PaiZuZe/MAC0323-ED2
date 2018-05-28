@@ -1,6 +1,8 @@
 import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
 import edu.princeton.cs.algs4.StdOut;
+import java.lang.Integer;
+import java.util.LinkedList;
 
 public class BurrowsWheeler {
     // apply Burrows-Wheeler transform, reading from standard input and writing to standard output
@@ -20,7 +22,6 @@ public class BurrowsWheeler {
                 temp = cirArray.length() - 1;
             else
                 temp = (temp - 1) % cirArray.length();
-            //StdOut.print(inputTxt.charAt(temp) + "\n");
             BinaryStdOut.write(inputTxt.charAt(temp));
         }
         BinaryStdOut.flush();
@@ -28,6 +29,36 @@ public class BurrowsWheeler {
 
     // apply Burrows-Wheeler inverse transform, reading from standard input and writing to standard output
     public static void inverseTransform() {
+        class Helper {
+            int freq;
+            LinkedList<Integer> poss;
+            Helper() {
+                this.freq = 0;
+                this.poss = new LinkedList<Integer>();
+                return;
+            }
+            void add(Integer pos) {
+                this.freq += 1;
+                this.poss.add(pos);
+                return;
+            }
+        }
+
+        int first, i;
+        char c;
+        Helper[] freq = new Helper[256];
+        String inputTxt = "";
+
+        for (i = 0; i < 256; i++) freq[i] = new Helper();
+        first = BinaryStdIn.readInt();
+        i = 0;
+        while (!BinaryStdIn.isEmpty()){
+            c = BinaryStdIn.readChar();
+            freq[(int) c].add(new Integer(i));
+            inputTxt += c;
+            i++;
+        }
+        //Se sorted[first] me da o prim, inputTxt[first] me da o último.
 
     }
 
