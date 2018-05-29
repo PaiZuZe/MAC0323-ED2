@@ -14,8 +14,11 @@ public class BurrowsWheeler {
         while (!BinaryStdIn.isEmpty()) inputTxt += BinaryStdIn.readChar();
         cirArray = new CircularSuffixArray(inputTxt);
 
-        for (int i = 0; i < cirArray.length(); i++) if (cirArray.index(i) == 0) BinaryStdOut.write(i);
-
+        for (int i = 0; i < cirArray.length(); i++)
+            if (cirArray.index(i) == 0) {
+                BinaryStdOut.write(i);
+                break;
+            }
         for (int i = 0; i < cirArray.length(); i++) {
             temp = cirArray.index(i);
             if ((temp - 1) % cirArray.length() < 0)
