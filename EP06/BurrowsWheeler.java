@@ -11,7 +11,7 @@ public class BurrowsWheeler {
         String inputTxt = "";
         CircularSuffixArray cirArray;
 
-        while (!BinaryStdIn.isEmpty()) inputTxt += BinaryStdIn.readChar();
+        inputTxt = BinaryStdIn.readString();
         cirArray = new CircularSuffixArray(inputTxt);
 
         for (int i = 0; i < cirArray.length(); i++)
@@ -62,7 +62,7 @@ public class BurrowsWheeler {
         while (!BinaryStdIn.isEmpty()){
             c = BinaryStdIn.readChar();
             freq[(int) c].add(new Integer(i));
-            inputTxt += c;
+            inputTxt = inputTxt.concat(Character.toString(c));
             i++;
         }
 
