@@ -8,23 +8,21 @@ public class BurrowsWheeler {
     // apply Burrows-Wheeler transform, reading from standard input and writing to standard output
     public static void transform() {
         int temp;
-        String inputTxt = "";
+        String inputTxt;
         CircularSuffixArray cirArray;
 
         inputTxt = BinaryStdIn.readString();
         cirArray = new CircularSuffixArray(inputTxt);
+        int len = cirArray.length();
 
-        for (int i = 0; i < cirArray.length(); i++)
+        for (int i = 0; i < len; i++)
             if (cirArray.index(i) == 0) {
                 BinaryStdOut.write(i);
                 break;
             }
-        for (int i = 0; i < cirArray.length(); i++) {
-            temp = cirArray.index(i);
-            if ((temp - 1) % cirArray.length() < 0)
-                temp = cirArray.length() - 1;
-            else
-                temp = (temp - 1) % cirArray.length();
+        for (int i = 0; i < len; i++) {
+            temp = (cirArray.index(i) - 1) % len;
+            if (temp < 0) temp = len - 1;
             BinaryStdOut.write(inputTxt.charAt(temp));
         }
         BinaryStdOut.flush();
@@ -48,29 +46,23 @@ public class BurrowsWheeler {
         }
 
         boolean guard = true;
-        int first, i, j;
+        int first, i, j, len;
         int[] next;
-        char c;
         char[] sorted;
-        String inputTxt = "";
+        String inputTxt;
         Helper[] freq = new Helper[256];
 
         //reads input, and creates aditional struct for the creation of next.
         for (i = 0; i < 256; i++) freq[i] = new Helper();
         first = BinaryStdIn.readInt();
-        i = 0;
-        while (!BinaryStdIn.isEmpty()){
-            c = BinaryStdIn.readChar();
-            freq[(int) c].add(new Integer(i));
-            inputTxt = inputTxt.concat(Character.toString(c));
-            i++;
-        }
+        inputTxt = BinaryStdIn.readString();
+        len = inputTxt.length();
+        for (i = 0; i < len; i++) freq[(int) inputTxt.charAt(i)].add(new Integer(i));
 
         //creates next[] and sorted.
-        j = 0;
-        next = new int[inputTxt.length()];
-        sorted = new char[inputTxt.length()];
-        for (i = 0; i < 256; i++) {
+        next = new int[len];
+        sorted = new char[len];
+        for (i = 0, j = 0; i < 256; i++) {
             if (freq[i].freq == 0) continue;
             for (Integer temp : freq[i].poss) {
                 sorted[j] = (char) i;
