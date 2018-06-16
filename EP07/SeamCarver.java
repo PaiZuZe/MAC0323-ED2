@@ -1,8 +1,6 @@
 import edu.princeton.cs.algs4.IndexMinPQ;
 import edu.princeton.cs.algs4.Picture;
-import edu.princeton.cs.algs4.StdOut;
-import java.lang.Thread;
-import java.util.*;
+import java.util.Objects;
 import java.lang.Math;
 import java.util.Iterator;
 import java.util.HashMap;
@@ -110,7 +108,7 @@ public class SeamCarver {
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
         /*X rows, Y columns*/
-        this.image = new Picture (picture);
+        this.image = new Picture(picture);
         this.rows = this.image.height();
         this.columns = this.image.width();
     }
@@ -186,6 +184,20 @@ public class SeamCarver {
             throw new java.lang.IllegalArgumentException("Seam can't be null\n");
         if (this.rows <= 1)
             throw new java.lang.IllegalArgumentException("Width of picture equals one\n");
+
+        int offset = 0;
+        Picture temp = new Picture(columns, rows - 1);
+        for (int i = 0; i < columns; i++) {
+            for (int j = 0; j < rows - 1; j++) {
+                if (seam[i] == j)
+                    offset = 1;
+                temp.setRGB(i, j, image.getRGB(i, j + offset));
+            }
+            offset = 0;
+        }
+
+        this.image = temp;
+        this.rows -= 1;
     }
 
     // remove vertical seam from current picture
@@ -194,6 +206,20 @@ public class SeamCarver {
             throw new java.lang.IllegalArgumentException("Seam can't be null\n");
         if (this.columns <= 1)
             throw new java.lang.IllegalArgumentException("Height of picture equals one\n");
+
+        int offset = 0;
+        Picture temp = new Picture(columns - 1, rows);
+        for (int j = 0; j < rows; j++) {
+            for (int i = 0; i < columns - 1; i++) {
+                if (seam[j] == i)
+                    offset = 1;
+                temp.setRGB(i, j, image.getRGB(i + offset, j));
+            }
+            offset = 0;
+        }
+
+        this.image = temp;
+        this.columns -= 1;
     }
 
     private double square(double x) {
@@ -211,12 +237,13 @@ public class SeamCarver {
         Pixel temp, prev, bobi, end;
         Iterator<Pixel> bob;
         int index;
-        IndexMinPQ<Pixel>frontier = new IndexMinPQ<Pixel>(this.rows * this.columns);
+        IndexMinPQ<Pixel>frontier = new IndexMinPQ<Pixel>(10 * (this.rows * this.columns));
         HashMap<Pixel, Pixel> edgeTo = new HashMap<Pixel, Pixel>();
         HashMap<Pixel, Double> costs = new HashMap<Pixel, Double>();
 
         prev = null;
         end = null;
+
         if (!vertical) index = init;
         else index = init * this.columns;
 
@@ -233,28 +260,25 @@ public class SeamCarver {
         edgeTo.put(temp, null);
 
         while (!frontier.isEmpty()) {
-            //tira da fronteira.
             temp = frontier.keyOf(frontier.minIndex());
             frontier.delMin();
-            //Pegar os vizinhos
+            if ((vertical && temp.y == this.rows - 1) || !vertical && temp.x == this.columns - 1) {
+                end = temp;
+                break;
+            }
+
             bob = temp.neighboors();
-            //para todo os vizinhos, ver se ele já foi visitdao
-            //se não coloca ele nas coisas.
-            //se sim vê se ele da bom colocar nas coisas.
+
             while (bob != null && bob.hasNext()) {
                 bobi = bob.next();
                 if (costs.containsKey(bobi) && costs.get(bobi) < bobi.cost)
                     continue;
+                index = bobi.x + bobi.y * columns;
+                if (frontier.contains(index)) frontier.changeKey(index, bobi);
+                else if (costs.containsKey(bobi)) continue; 
+                else frontier.insert(index, bobi);
                 costs.put(bobi, bobi.cost);
                 edgeTo.put(bobi, temp);
-                index = bobi.x * columns + bobi.y;
-                //se tiver o cara, precisa dar update nele.
-                if (frontier.contains(index)) frontier.changeKey(index, bobi);
-                else frontier.insert(index, bobi);
-
-                if ((vertical && bobi.y == this.rows - 1) || !vertical && bobi.x == this.columns - 1)
-                    if (end == null || costs.get(end) > costs.get(bobi))
-                        end = bobi;
             }
         }
         path.cost = costs.get(end);
