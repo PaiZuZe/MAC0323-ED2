@@ -1,6 +1,8 @@
 import edu.princeton.cs.algs4.IndexMinPQ;
 import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.StdOut;
+import java.lang.Thread;
+import java.util.*;
 import java.lang.Math;
 import java.util.Iterator;
 import java.util.HashMap;
@@ -21,7 +23,7 @@ public class SeamCarver {
         public Path(int size) {
             this.path = new int[size];
             this.cost = 0;
-            this.count = 0;
+            this.count = size - 1;
         }
 
         public void addCost(double x) {
@@ -29,7 +31,7 @@ public class SeamCarver {
         }
 
         public void addToPath(int index) {
-            path[count++] = index;
+            path[count--] = index;
         }
 
         public int[] curPath() {
@@ -49,20 +51,16 @@ public class SeamCarver {
             this.x = x;
             this.y = y;
             this.flag = flag;
-            if (flag) {
-                this.cost = energy(x, y) + prevCost;
-            }
-            else {
-                this.cost = energy(y, x) + prevCost;
-            }
+            this.cost = energy[x][y] + prevCost;
             return;
         }
 
         public Iterator<Pixel> neighboors() {
             LinkedList<Pixel> neig = new LinkedList<Pixel>();
             int tempx, tempy;
-            //(x − 1, y + 1), (x, y + 1), and (x + 1, y + 1)
             if (flag) {
+                if (y == rows - 1)
+                    return null;
                 if (this.x > 0)
                     neig.add(new Pixel(this.x - 1, this.y + 1, this.cost, this.flag));
                 neig.add(new Pixel(this.x, this.y + 1, this.cost, this.flag));
@@ -70,6 +68,8 @@ public class SeamCarver {
                     neig.add(new Pixel(this.x + 1, this.y + 1, this.cost, this.flag));
             }
             else {
+                if (x == columns - 1)
+                    return null;
                 if (this.y > 0)
                     neig.add(new Pixel(this.x + 1, this.y - 1, this.cost, this.flag));
                 neig.add(new Pixel(this.x + 1, this.y, this.cost, this.flag));
@@ -77,6 +77,23 @@ public class SeamCarver {
                     neig.add(new Pixel(this.x + 1, this.y + 1, this.cost, this.flag));
             }
             return neig.listIterator();
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y);
+        }
+
+
+        @Override
+        public boolean equals(Object other) {
+            if (other == this)
+                return true;
+            if (!(other instanceof Pixel))
+                return false;
+            if (this.x == ((Pixel) other).x && this.y == ((Pixel) other).y)
+                return true;
+            return false;
         }
 
         public int compareTo(Pixel other) {
@@ -131,9 +148,7 @@ public class SeamCarver {
                 + square(((cor3 >> 0) & 0xFF) - ((cor4 >> 0) & 0xFF));
         return(Math.sqrt(delX + delY));
     }
-    /*O lance parece colocar em uma PQ com o  menor peso(valor da energia), usar Djikstra */
-    /*Uma matriz conde calc todos as energ antes ta dentro do perf req*/
-    // sequence of indices for horizontal seam
+
     public int[] findHorizontalSeam() {
         Path blah[] = new Path[this.rows];
         int min = 0;
@@ -141,7 +156,7 @@ public class SeamCarver {
         for (int i = 0; i < this.columns; i++)
             for (int j = 0; j < this.rows; j++)
                 energy[i][j] = energy(i, j);
-        for (int i = 0; i < this.columns; i++) {
+        for (int i = 0; i < this.rows; i++) {
             blah[i] = djikstra(i, false);
             if (blah[i].cost < blah[min].cost)
                 min = i;
@@ -151,16 +166,14 @@ public class SeamCarver {
 
     // sequence of indices for vertical seam
     public int[] findVerticalSeam() {
-        Path blah[] = new Path[columns];
+        Path blah[] = new Path[this.columns];
         int min = 0;
         this.energy = new double[this.columns][this.rows];
         for (int i = 0; i < this.columns; i++)
             for (int j = 0; j < this.rows; j++)
                 energy[i][j] = energy(i, j);
-        for (int j = 0; j < this.rows; j++) {
-            StdOut.print("vou começar um djikstra\n");
+        for (int j = 0; j < this.columns; j++) {
             blah[j] = djikstra(j, true);
-            StdOut.print("Acabei um djikstra\n");
             if (blah[j].cost < blah[min].cost)
                 min = j;
         }
@@ -207,10 +220,14 @@ public class SeamCarver {
         if (!vertical) index = init;
         else index = init * this.columns;
 
-        if (!vertical) path = new Path(this.columns);
-        else path = new Path(this.rows);
-
-        temp = new Pixel(init, 0, 0.0, vertical);
+        if (!vertical) {
+            path = new Path(this.columns);
+            temp = new Pixel(0, init, 0.0, vertical);
+        }
+        else {
+            path = new Path(this.rows);
+            temp = new Pixel(init, 0, 0.0, vertical);
+        }
         frontier.insert(index, temp);
         costs.put(temp, temp.cost);
         edgeTo.put(temp, null);
@@ -224,34 +241,30 @@ public class SeamCarver {
             //para todo os vizinhos, ver se ele já foi visitdao
             //se não coloca ele nas coisas.
             //se sim vê se ele da bom colocar nas coisas.
-            while (bob.hasNext()) {
+            while (bob != null && bob.hasNext()) {
                 bobi = bob.next();
-                /*Se bobi não é legal, nem faz nada com ele*/
-                if (costs.containsKey(bobi) && costs.get(bobi) < bobi.cost) continue;
-                /*Se ele for coloca no edgeTo, costs e na fronteira*/
+                if (costs.containsKey(bobi) && costs.get(bobi) < bobi.cost)
+                    continue;
                 costs.put(bobi, bobi.cost);
-                edgeTo.put(bobi, prev);
+                edgeTo.put(bobi, temp);
                 index = bobi.x * columns + bobi.y;
                 //se tiver o cara, precisa dar update nele.
                 if (frontier.contains(index)) frontier.changeKey(index, bobi);
                 else frontier.insert(index, bobi);
 
                 if ((vertical && bobi.y == this.rows - 1) || !vertical && bobi.x == this.columns - 1)
-                    if (end != null && costs.get(end) > costs.get(bobi))
+                    if (end == null || costs.get(end) > costs.get(bobi))
                         end = bobi;
             }
         }
         path.cost = costs.get(end);
-        StdOut.print("Vou só fazer o caminho\n");
         while (end != null) {
             if (vertical)
-                path.addToPath(end.y);
-            else
                 path.addToPath(end.x);
+            else
+                path.addToPath(end.y);
             end = edgeTo.get(end);
         }
-        //Sempre da para achar um caminho.
-        //Então ta na hora do fim pro começo achando o caminho.
         return path;
     }
 
