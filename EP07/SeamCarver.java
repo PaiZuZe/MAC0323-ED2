@@ -7,13 +7,19 @@ public class SeamCarver {
     private int m;
 
     private class Pixel {
-        int this.x;
-        int this.y;
+        int x;
+        int y;
+        double ener; 
 
-        public Pixel(int x, int y) {
+        public Pixel(int x, int y, double e) {
             this.x = x;
             this.y = y;
+            this.ener = e;
             return;
+        }
+        
+        public compareTo(Pixel other) {
+            
         }
     }
 
@@ -62,7 +68,7 @@ public class SeamCarver {
             for (int j = 0; j < this.m; j++)
                 energy[i][j] = energy(i, j);
         for (int j = 0; j < this.m; j++) {
-
+            
         }
     }
 
