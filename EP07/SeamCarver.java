@@ -1,4 +1,3 @@
-import edu.princeton.cs.algs4.IndexMinPQ;
 import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.Stack;
 import java.util.Objects;
@@ -42,53 +41,51 @@ public class SeamCarver {
     private class Pixel implements Comparable<Pixel> {
         int x;
         int y;
-        int prim;
         Boolean flag;
         double cost;
 
-        public Pixel(int x, int y, double prevCost, Boolean flag) {
+        public Pixel(int x, int y, Boolean flag) {
             this.x = x;
             this.y = y;
             this.flag = flag;
             if (x != -1 && y != -1)
-                this.cost = energy[x][y] + prevCost;
+                this.cost = energy[x][y];
             else
-                this.cost = 0;    
+                this.cost = 0;
             return;
         }
 
         public Iterator<Pixel> neighboors() {
             LinkedList<Pixel> neig = new LinkedList<Pixel>();
-            int tempx, tempy;
             if (flag) {
                 if (x == -1 && y == -1) {
                     for (int i = 0; i < columns; i++) {
-                        neig.add(new Pixel(i, 0, this.cost, this.flag));
+                        neig.add(new Pixel(i, 0, this.flag));
                     }
                     return neig.listIterator();
                 }
                 if (y == rows - 1)
                     return null;
                 if (this.x > 0)
-                    neig.add(new Pixel(this.x - 1, this.y + 1, this.cost, this.flag));
-                neig.add(new Pixel(this.x, this.y + 1, this.cost, this.flag));
+                    neig.add(new Pixel(this.x - 1, this.y + 1, this.flag));
+                neig.add(new Pixel(this.x, this.y + 1, this.flag));
                 if (this.x < columns - 1)
-                    neig.add(new Pixel(this.x + 1, this.y + 1, this.cost, this.flag));
+                    neig.add(new Pixel(this.x + 1, this.y + 1, this.flag));
             }
             else {
                 if (x == -1 && y == -1) {
                     for (int j = 0; j < rows; j++) {
-                        neig.add(new Pixel(0, j, this.cost, this.flag));
+                        neig.add(new Pixel(0, j, this.flag));
                     }
                     return neig.listIterator();
                 }
                 if (x == columns - 1)
                     return null;
                 if (this.y > 0)
-                    neig.add(new Pixel(this.x + 1, this.y - 1, this.cost, this.flag));
-                neig.add(new Pixel(this.x + 1, this.y, this.cost, this.flag));
+                    neig.add(new Pixel(this.x + 1, this.y - 1, this.flag));
+                neig.add(new Pixel(this.x + 1, this.y, this.flag));
                 if (this.y < rows - 1)
-                    neig.add(new Pixel(this.x + 1, this.y + 1, this.cost, this.flag));
+                    neig.add(new Pixel(this.x + 1, this.y + 1, this.flag));
             }
             return neig.listIterator();
         }
@@ -244,8 +241,8 @@ public class SeamCarver {
         Pixel temp;
         HashMap<Pixel, Pixel> edgeTo = new HashMap<Pixel, Pixel>();
         Stack<Pixel> order = new Stack<Pixel>();
-        if (!vertical) temp = new Pixel(-1, -1, 0.0, vertical);
-        else temp = new Pixel(-1, -1, 0.0, vertical);
+        if (!vertical) temp = new Pixel(-1, -1, vertical);
+        else temp = new Pixel(-1, -1, vertical);
         topological(temp, edgeTo, order);
         return order;
     }
@@ -277,14 +274,15 @@ public class SeamCarver {
         else path = new Path(this.rows);
 
         for (Pixel temp : order) {
+            if (!costs.containsKey(temp)) costs.put(temp, temp.cost);
             bob = temp.neighboors();
-            if (bob == null && (end == null || temp.cost < costs.get(end)))
+            if (bob == null && (end == null || costs.get(temp) < costs.get(end)))
                 end = temp;
 
             while (bob != null && bob.hasNext()) {
                 bobi = bob.next();
-                if (costs.containsKey(bobi) && costs.get(bobi) < bobi.cost) continue;
-                costs.put(bobi, bobi.cost);
+                if (costs.containsKey(bobi) && costs.get(bobi) < bobi.cost + costs.get(temp)) continue;
+                costs.put(bobi, bobi.cost + costs.get(temp));
                 edgeTo.put(bobi, temp);
             }
         }
