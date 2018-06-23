@@ -50,7 +50,10 @@ public class SeamCarver {
             this.x = x;
             this.y = y;
             this.flag = flag;
-            this.cost = energy[x][y] + prevCost;
+            if (x != -1 && y != -1)
+                this.cost = energy[x][y] + prevCost;
+            else
+                this.cost = 0;    
             return;
         }
 
@@ -58,6 +61,12 @@ public class SeamCarver {
             LinkedList<Pixel> neig = new LinkedList<Pixel>();
             int tempx, tempy;
             if (flag) {
+                if (x == -1 && y == -1) {
+                    for (int i = 0; i < columns; i++) {
+                        neig.add(new Pixel(i, 0, this.cost, this.flag));
+                    }
+                    return neig.listIterator();
+                }
                 if (y == rows - 1)
                     return null;
                 if (this.x > 0)
@@ -67,6 +76,12 @@ public class SeamCarver {
                     neig.add(new Pixel(this.x + 1, this.y + 1, this.cost, this.flag));
             }
             else {
+                if (x == -1 && y == -1) {
+                    for (int j = 0; j < rows; j++) {
+                        neig.add(new Pixel(0, j, this.cost, this.flag));
+                    }
+                    return neig.listIterator();
+                }
                 if (x == columns - 1)
                     return null;
                 if (this.y > 0)
@@ -155,13 +170,8 @@ public class SeamCarver {
         for (int i = 0; i < this.columns; i++)
             for (int j = 0; j < this.rows; j++)
                 energy[i][j] = energy(i, j);
-        for (int i = 0; i < this.rows; i++) {
-            //blah[i] = djikstra(i, false);
-            blah[i] = findPath(i, false);
-            if (blah[i].cost < blah[min].cost)
-                min = i;
-        }
-        return blah[min].curPath();
+
+        return findPath(false).curPath();
     }
 
     // sequence of indices for vertical seam
@@ -172,13 +182,8 @@ public class SeamCarver {
         for (int i = 0; i < this.columns; i++)
             for (int j = 0; j < this.rows; j++)
                 energy[i][j] = energy(i, j);
-        for (int j = 0; j < this.columns; j++) {
-            //blah[j] = djikstra(j, true);
-            blah[j] = findPath(j, true);
-            if (blah[j].cost < blah[min].cost)
-                min = j;
-        }
-        return blah[min].curPath();
+
+        return findPath(true).curPath();
     }
 
     // remove horizontal seam from current picture
@@ -235,12 +240,12 @@ public class SeamCarver {
         return x % n;
     }
 
-    private Stack<Pixel> topological(int init, Boolean vertical) {
+    private Stack<Pixel> topological(Boolean vertical) {
         Pixel temp;
         HashMap<Pixel, Pixel> edgeTo = new HashMap<Pixel, Pixel>();
         Stack<Pixel> order = new Stack<Pixel>();
-        if (!vertical) temp = new Pixel(0, init, 0.0, vertical);
-        else temp = new Pixel(init, 0, 0.0, vertical);
+        if (!vertical) temp = new Pixel(-1, -1, 0.0, vertical);
+        else temp = new Pixel(-1, -1, 0.0, vertical);
         topological(temp, edgeTo, order);
         return order;
     }
@@ -255,17 +260,18 @@ public class SeamCarver {
             edgeTo.put(bobi, init);
             topological(bobi, edgeTo, order);
         }
-        order.push(init);
+        if (init.x != -1 && init.y != -1)
+            order.push(init);
         return;
     }
 
-    private Path findPath(int init, Boolean vertical) {
+    private Path findPath(Boolean vertical) {
         Path path;
         Pixel bobi, end = null;
         Iterator<Pixel> bob;
         HashMap<Pixel, Double> costs = new HashMap<Pixel, Double>();
         HashMap<Pixel, Pixel> edgeTo = new HashMap<Pixel, Pixel>();
-        Stack<Pixel> order = topological(init, vertical);
+        Stack<Pixel> order = topological(vertical);
 
         if (!vertical) path = new Path(this.columns);
         else path = new Path(this.rows);
@@ -291,66 +297,6 @@ public class SeamCarver {
         }
         return path;
 
-    }
-
-    private Path djikstra(int init, Boolean vertical) {
-        Path path;
-        Pixel temp, prev, bobi, end;
-        Iterator<Pixel> bob;
-        int index;
-        IndexMinPQ<Pixel>frontier = new IndexMinPQ<Pixel>(10 * (this.rows * this.columns));
-        HashMap<Pixel, Pixel> edgeTo = new HashMap<Pixel, Pixel>();
-        HashMap<Pixel, Double> costs = new HashMap<Pixel, Double>();
-
-        prev = null;
-        end = null;
-
-        if (!vertical) index = init;
-        else index = init * this.columns;
-
-        if (!vertical) {
-            path = new Path(this.columns);
-            temp = new Pixel(0, init, 0.0, vertical);
-        }
-        else {
-            path = new Path(this.rows);
-            temp = new Pixel(init, 0, 0.0, vertical);
-        }
-        frontier.insert(index, temp);
-        costs.put(temp, temp.cost);
-        edgeTo.put(temp, null);
-
-        while (!frontier.isEmpty()) {
-            temp = frontier.keyOf(frontier.minIndex());
-            frontier.delMin();
-            if ((vertical && temp.y == this.rows - 1) || !vertical && temp.x == this.columns - 1) {
-                end = temp;
-                break;
-            }
-
-            bob = temp.neighboors();
-
-            while (bob != null && bob.hasNext()) {
-                bobi = bob.next();
-                if (costs.containsKey(bobi) && costs.get(bobi) < bobi.cost)
-                    continue;
-                index = bobi.x + bobi.y * columns;
-                if (frontier.contains(index)) frontier.changeKey(index, bobi);
-                else if (costs.containsKey(bobi)) continue;
-                else frontier.insert(index, bobi);
-                costs.put(bobi, bobi.cost);
-                edgeTo.put(bobi, temp);
-            }
-        }
-        path.cost = costs.get(end);
-        while (end != null) {
-            if (vertical)
-                path.addToPath(end.x);
-            else
-                path.addToPath(end.y);
-            end = edgeTo.get(end);
-        }
-        return path;
     }
 
     //  unit testing (required)
