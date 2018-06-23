@@ -120,7 +120,8 @@ public class SeamCarver {
 
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
-        /*X rows, Y columns*/
+        if (picture == null)
+            throw new java.lang.IllegalArgumentException("Picture can't be null\n");
         this.image = new Picture(picture);
         this.rows = this.image.height();
         this.columns = this.image.width();
@@ -189,6 +190,10 @@ public class SeamCarver {
             throw new java.lang.IllegalArgumentException("Seam can't be null\n");
         if (this.rows <= 1)
             throw new java.lang.IllegalArgumentException("Width of picture equals one\n");
+        if (seam.length == this.rows)
+            throw new java.lang.IllegalArgumentException("Seam of wrong size\n");
+        if (!validateSeam(seam, false))
+            throw new java.lang.IllegalArgumentException("Probleam with the seam\n");
 
         int offset = 0;
         Picture temp = new Picture(columns, rows - 1);
@@ -211,6 +216,10 @@ public class SeamCarver {
             throw new java.lang.IllegalArgumentException("Seam can't be null\n");
         if (this.columns <= 1)
             throw new java.lang.IllegalArgumentException("Height of picture equals one\n");
+        if (seam.length == this.columns)
+            throw new java.lang.IllegalArgumentException("Seam of wrong size\n");
+        if (!validateSeam(seam, true))
+            throw new java.lang.IllegalArgumentException("Probleam with the seam\n");
 
         int offset = 0;
         Picture temp = new Picture(columns - 1, rows);
@@ -225,6 +234,24 @@ public class SeamCarver {
 
         this.image = temp;
         this.columns -= 1;
+    }
+
+    private boolean validateSeam(int[] seam, boolean vertical) {
+        if (vertical) {
+            for (int i = 0; i < seam.length; i++) {
+                if (seam[i] < 0 || seam[i] >= this.columns) return false;
+                if (i == 0) continue;
+                if (Math.abs(seam[i] - seam[i - 1]) > 2) return false;
+            }
+        }
+        else {
+            for (int j = 0; j < seam.length; j++) {
+                if (seam[j] < 0 || seam[j] >= this.rows) return false;
+                if (j == 0) continue;
+                if (Math.abs(seam[j] - seam[j - 1]) > 2) return false;
+            }
+        }
+        return true;
     }
 
     private double square(double x) {
