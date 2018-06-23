@@ -1,5 +1,6 @@
 import edu.princeton.cs.algs4.IndexMinPQ;
 import edu.princeton.cs.algs4.Picture;
+import edu.princeton.cs.algs4.Stack;
 import java.util.Objects;
 import java.lang.Math;
 import java.util.Iterator;
@@ -155,7 +156,8 @@ public class SeamCarver {
             for (int j = 0; j < this.rows; j++)
                 energy[i][j] = energy(i, j);
         for (int i = 0; i < this.rows; i++) {
-            blah[i] = djikstra(i, false);
+            //blah[i] = djikstra(i, false);
+            blah[i] = findPath(i, false);
             if (blah[i].cost < blah[min].cost)
                 min = i;
         }
@@ -171,7 +173,8 @@ public class SeamCarver {
             for (int j = 0; j < this.rows; j++)
                 energy[i][j] = energy(i, j);
         for (int j = 0; j < this.columns; j++) {
-            blah[j] = djikstra(j, true);
+            //blah[j] = djikstra(j, true);
+            blah[j] = findPath(j, true);
             if (blah[j].cost < blah[min].cost)
                 min = j;
         }
@@ -232,6 +235,64 @@ public class SeamCarver {
         return x % n;
     }
 
+    private Stack<Pixel> topological(int init, Boolean vertical) {
+        Pixel temp;
+        HashMap<Pixel, Pixel> edgeTo = new HashMap<Pixel, Pixel>();
+        Stack<Pixel> order = new Stack<Pixel>();
+        if (!vertical) temp = new Pixel(0, init, 0.0, vertical);
+        else temp = new Pixel(init, 0, 0.0, vertical);
+        topological(temp, edgeTo, order);
+        return order;
+    }
+
+    private void topological(Pixel init, HashMap<Pixel, Pixel> edgeTo, Stack<Pixel> order) {
+        Iterator<Pixel> bob;
+        Pixel bobi;
+        bob = init.neighboors();
+        while (bob != null && bob.hasNext()) {
+            bobi = bob.next();
+            if (edgeTo.containsKey(bobi)) continue;
+            edgeTo.put(bobi, init);
+            topological(bobi, edgeTo, order);
+        }
+        order.push(init);
+        return;
+    }
+
+    private Path findPath(int init, Boolean vertical) {
+        Path path;
+        Pixel bobi, end = null;
+        Iterator<Pixel> bob;
+        HashMap<Pixel, Double> costs = new HashMap<Pixel, Double>();
+        HashMap<Pixel, Pixel> edgeTo = new HashMap<Pixel, Pixel>();
+        Stack<Pixel> order = topological(init, vertical);
+
+        if (!vertical) path = new Path(this.columns);
+        else path = new Path(this.rows);
+
+        for (Pixel temp : order) {
+            bob = temp.neighboors();
+            if (bob == null && (end == null || temp.cost < costs.get(end)))
+                end = temp;
+
+            while (bob != null && bob.hasNext()) {
+                bobi = bob.next();
+                if (costs.containsKey(bobi) && costs.get(bobi) < bobi.cost) continue;
+                costs.put(bobi, bobi.cost);
+                edgeTo.put(bobi, temp);
+            }
+        }
+
+        path.cost = costs.get(end);
+        while (end != null) {
+            if (vertical) path.addToPath(end.x);
+            else path.addToPath(end.y);
+            end = edgeTo.get(end);
+        }
+        return path;
+
+    }
+
     private Path djikstra(int init, Boolean vertical) {
         Path path;
         Pixel temp, prev, bobi, end;
@@ -275,7 +336,7 @@ public class SeamCarver {
                     continue;
                 index = bobi.x + bobi.y * columns;
                 if (frontier.contains(index)) frontier.changeKey(index, bobi);
-                else if (costs.containsKey(bobi)) continue; 
+                else if (costs.containsKey(bobi)) continue;
                 else frontier.insert(index, bobi);
                 costs.put(bobi, bobi.cost);
                 edgeTo.put(bobi, temp);
