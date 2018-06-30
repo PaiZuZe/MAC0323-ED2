@@ -8,3 +8,4 @@ Most of the assignments came from the [COS226](http://www.cs.princeton.edu/cours
 * [EP03](http://www.cs.princeton.edu/courses/archive/spring18/cos226/assignments/8puzzle/index.html) : Solves a [N-puzzle](https://en.wikipedia.org/wiki/15_puzzle).
 * [EP04](http://www.cs.princeton.edu/courses/archive/spring18/cos226/assignments/kdtree/index.html) : K-nearest-neighbor and all points that fit a rectangle using a Kd-tree.
 * [EP06](http://www.cs.princeton.edu/courses/archive/spring18/cos226/assignments/burrows/index.html) : File compression using the [Burrows–Wheeler transform](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform).
+* [EP07](http://www.cs.princeton.edu/courses/archive/spring18/cos226/assignments/seam/index.html) : Image resizing using the [Seam Carving](https://en.wikipedia.org/wiki/Seam_carving) algorithm, only reducing the image size was required.
